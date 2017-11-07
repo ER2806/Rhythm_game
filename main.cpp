@@ -24,6 +24,8 @@ int main()
     sf::RectangleShape line3(sf::Vector2f(height-100, 4));
     line3.setPosition(width/2+50,50);
     line3.rotate(90);
+    sf::RectangleShape lineh(sf::Vector2f(200, 4));
+    lineh.setPosition(width/2-100,480);
 
     // Declare and load a texture
     sf::Texture texture;
@@ -33,6 +35,8 @@ int main()
     PointList.push_back(PointInTime(1000,3));
     PointList.push_back(PointInTime(0,2));
     PointList.push_back(PointInTime(2000,3));
+    PointList.push_back(PointInTime(1500,1));
+    PointList.push_back(PointInTime(2500,2));
 
     std::vector<sf::Sprite> SpriteList;
     for(int i = 0; i < PointList.size(); i++)
@@ -44,19 +48,6 @@ int main()
         sprite.setPosition(width/2-100 + 50*PointList[i].line - 30, 20);
         SpriteList.push_back(sprite);
     }
-
-    // Create a sprite
-    sf::Sprite sprite;
-    sprite.setTexture(texture);
-    sprite.setTextureRect(sf::IntRect(0, 0, 60, 60));
-    sprite.setColor(sf::Color(255, 255, 255, 250));
-    sprite.setPosition(218, 350);
-
-    sf::Sprite sprite2;
-    sprite2.setTexture(texture);
-    sprite2.setTextureRect(sf::IntRect(0, 0, 60, 60));
-    sprite2.setColor(sf::Color(255, 255, 255, 250));
-    sprite2.setPosition(268, 550);
 
     sf::Sprite PressedSprite;
     PressedSprite.setTexture(texture);
@@ -79,31 +70,22 @@ int main()
                 window.close();
         }
 
-
-        //sprite2.move(0,-0.1*deltaTime);
-
         window.clear();
         window.draw(line1);
         window.draw(line2);
         window.draw(line3);
+        window.draw(lineh);
 
         for(int i = 0; i < SpriteList.size(); i++)
         {
             std::cout << deltaTime << " " << i << " " << PointList[i].time << std::endl;
-            if((PointList[i].time <= deltaTime)) //&& ())
+            if((PointList[i].time <= deltaTime) && (SpriteList[i].getPosition().y <= 520))
             {
-                //SpriteList[i].move(0, -0.1*(deltaTime - PointList[i].time));
-                SpriteList[i].move(0, 1);
+                if(!(((int)deltaTime) % 4))
+                    SpriteList[i].move(0, 1);
                 window.draw(SpriteList[i]);
-            }
-
-            /*SpriteList[i].move(0, -0.001*(deltaTime - PointList[i].time)); // разность должна быть от 0 до 500000
-            if((deltaTime - PointList[i].time > 0) && (deltaTime - PointList[i].time < 5000))
-                window.draw(SpriteList[i]);*/
+            }          
         }
-
-        //window.draw(sprite);
-        //window.draw(sprite2);
         //window.draw(PressedSprite);
         window.display();
     }
