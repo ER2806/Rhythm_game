@@ -15,35 +15,12 @@
 #define SPECHEIGHT 1000	// height (changing requires palette adjustments too)
 #define BANDS 3
 #define TDIFF 50
-/*
-*/
+
 DWORD chan;
 
-/*
-struct quantum{
-    int y_line[BANDS];
-    int* y_line;
-
-    quantum(){
-        y_line = new int[BANDS];
-    }
-    quantum(const quantum& other){
-        y_line = new int[BANDS];
-        for(int i = 0; i < BANDS; ++i){
-            y_line[i] = other.y_line[i];
-        }
-    }
-    ~quantum(){
-        delete[] y_line;
-    }
-};*/
 
 // select a file to play, and play it
 BOOL PlayFile(const std::string& filename){
-    //strcpy(file, "/home/qskwx/Music/Skrillexfeat.mp3");
-    //strcpy(file, filename.c_str());//"/home/qskwx/Music/stilldre.mp3");
-    //strcpy(file, "/home/qskwx/Music/haddawa.wav");
-
     if (!(chan=BASS_StreamCreateFile(FALSE,filename.c_str(),0,0,0))//BASS_SAMPLE_LOOP))
         && !(chan=BASS_MusicLoad(FALSE,filename.c_str(),0,0,BASS_MUSIC_RAMP,1))){//|BASS_SAMPLE_LOOP,1))) {
             //Error("Can't play file");
@@ -126,6 +103,14 @@ std::vector<std::array<int, BANDS>> filterArray(std::vector<std::array<int, BAND
         for(int i = 1; i < dotsOnBands.size() - 2; i += 2){
             if(dotsOnBands[i][band] == dotsOnBands[i+1][band] && dotsOnBands[i][band] == 1){
                 dotsOnBands[i+1][band] = 0;
+            }
+        }
+        for(int i = 0; i < dotsOnBands.size() - 4; ++i){
+            if(dotsOnBands[i][band] + dotsOnBands[i+1][band] + dotsOnBands[i+2][band] + dotsOnBands[i+3][band] > 1) {
+                dotsOnBands[i][band] = 1;
+                dotsOnBands[i+1][band] = 0;
+                dotsOnBands[i+2][band] = 0;
+                dotsOnBands[i+3][band] = 0;
             }
         }
     }
