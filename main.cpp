@@ -13,12 +13,12 @@
 #define SPECWIDTH 368	// display width (should be multiple of 4)
 #define SPECHEIGHT 1000	// height (changing requires palette adjustments too)
 #define BANDS 3
+#define TDIFF 50
 /*
 */
 DWORD chan;
 
 struct quantum{
-    int x;
     int* y_line;
 
     quantum(){
@@ -29,23 +29,21 @@ struct quantum{
         for(int i = 0; i < BANDS; ++i){
             y_line[i] = other.y_line[i];
         }
-        x = other.x;
     }
-
     ~quantum(){
         delete[] y_line;
     }
 };
 
 // select a file to play, and play it
-BOOL PlayFile(){
+BOOL PlayFile(const std::string& filename){
     char* file = new char[100];
     //strcpy(file, "/home/qskwx/Music/Skrillexfeat.mp3");
-    //strcpy(file, "/home/qskwx/Music/stilldre.mp3");
-    strcpy(file, "/home/qskwx/Music/haddawa.wav");
+    //strcpy(file, filename.c_str());//"/home/qskwx/Music/stilldre.mp3");
+    //strcpy(file, "/home/qskwx/Music/haddawa.wav");
 
-    if (!(chan=BASS_StreamCreateFile(FALSE,file,0,0,0))//BASS_SAMPLE_LOOP))
-        && !(chan=BASS_MusicLoad(FALSE,file,0,0,BASS_MUSIC_RAMP,1))){//|BASS_SAMPLE_LOOP,1))) {
+    if (!(chan=BASS_StreamCreateFile(FALSE,filename.c_str(),0,0,0))//BASS_SAMPLE_LOOP))
+        && !(chan=BASS_MusicLoad(FALSE,filename.c_str(),0,0,BASS_MUSIC_RAMP,1))){//|BASS_SAMPLE_LOOP,1))) {
             //Error("Can't play file");
     }
     else {
@@ -56,8 +54,7 @@ BOOL PlayFile(){
 // update the spectrum display - the interesting bit :)
 bool UpdateSpectrum(std::vector<quantum>& array, int time){
     quantum temp;
-    temp.x = time;
-    int x,y,y1;
+    int x,y;
     float fft[2048];
     int returnval = BASS_ChannelGetData(chan,fft,BASS_DATA_FFT2048); // get the FFT data
     int b0 = 0;
@@ -82,43 +79,87 @@ bool UpdateSpectrum(std::vector<quantum>& array, int time){
     return returnval != -1;
 }
 
-int main(int argc, char* argv[])
-{
+/*
+void printArrayToFIle(std::vector<quantum> array){
+    FILE* f = fopen("output.txt", "w");
+    for(int i = 0; i < array.size(); ++i){
+        fprintf(f, "\n%.5d: ", (i+1)*TDIFF);
+        for(int j = 0; j < BANDS; ++j){
+            fprintf(f, "%.3d ", array[i].y_line[j]);
+        }
+    }
+}
+*/
+void printArray(std::vector<quantum> array){
+    for(int i = 0; i < array.size(); ++i){
+        printf("\n%.5d: ", (i+1)*TDIFF);
+        for(int j = 0; j < BANDS; ++j){
+            printf("%.3d ", array[i].y_line[j]);
+        }
+    }
+}
+
+std::vector<quantum> filterArray(std::vector<quantum> array){
+    std::vector<quantum> dotsOnBands = array;
+    int lastmin = SPECHEIGHT;
+    for(int band = 0; band < BANDS; ++band){
+        for(int i = 0; i < array.size(); ++i){
+            if (array[i].y_line[band] > lastmin*1.5){
+                dotsOnBands[i].y_line[band] = 1;
+                lastmin = array[i].y_line[band];
+            }
+            else{
+                if (lastmin > array[i].y_line[band]){
+                    lastmin = array[i].y_line[band];
+                }
+                dotsOnBands[i].y_line[band] = 0;
+            }
+        }
+    }
+    printArray(dotsOnBands);
+}
+
+bool parse(std::string filename){
     if (HIWORD(BASS_GetVersion())!=BASSVERSION) {
         //Error("An incorrect version of BASS was loaded");
-        return 0;
+        return -1;
     }
 
     // initialize BASS
     if (!BASS_Init(-1,44100,0,NULL,NULL)) {
         //Error("Can't initialize device");
-        return 0;
+        return -1;
     }
 
-    if (!PlayFile()) { // start a file playing
+    if (!PlayFile(filename)) { // start a file playing
         BASS_Free();
-        return 0;
+        return -1;
     }
-
-    // setup update timer (40hz)
 
     std::vector<quantum> array;
 
+    // setup update timer (20hz)
     bool returnval = true;
     int i = 0;
     while(returnval){
         i += 50;
-        usleep(50000);
+        usleep(TDIFF*1000);
         returnval = UpdateSpectrum(array, i);
     }
-    for(int i = 0; i < array.size(); ++i){
-        printf("\n%.5d: ", array[i].x);
-        for(int j = 0; j < BANDS; ++j){
-            printf("%.3d ", array[i].y_line[j]);
-        }
-    }
 
+    printArray(array);
+    std::vector<quantum> result = filterArray(array);
 
     BASS_Free();
     return 0;
+
 }
+
+
+int main(int argc, char* argv[]){
+    std::string filename = "/home/qskwx/Music/haddawa.wav";
+    parse(filename);
+
+    return 0;
+}
+
