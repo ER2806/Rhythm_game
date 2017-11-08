@@ -13,10 +13,26 @@ struct PointInTime{
     }
 };
 
+void startGame() // cоздание клиента
+{
+    // Client NewClient();
+}
+
+std::string getTrack() //получение адеса аудио
+{
+    //NewClient.getTrackFromServer();
+    return "haddawa.wav";
+}
+
+std::string getParsedTrack()
+{
+    return "test.txt";
+}
+
 int main()
 {
     sf::SoundBuffer buffer;
-    if (!buffer.loadFromFile("tune.wav"))
+    if (!buffer.loadFromFile("haddawa.wav"))
         return -1;
     sf::Sound sound;
     sound.setBuffer(buffer);
@@ -41,24 +57,15 @@ int main()
     texture.loadFromFile("sphere.png");
 
     std::vector<PointInTime> PointList;
-    /*ifstream in;
-    in.open("input.txt");
+    std::ifstream in;
+    in.open("test.txt");
     int64_t ms;
     int num;                                      
     while(in >> ms)
     {   
         in >> num;
-        PointList.push_back(ms,num);
-    }*/
-    
-    PointList.push_back(PointInTime(1000,3));
-    PointList.push_back(PointInTime(700,2));
-    PointList.push_back(PointInTime(0,2));
-    PointList.push_back(PointInTime(2000,3));
-    PointList.push_back(PointInTime(1500,1));
-    PointList.push_back(PointInTime(2500,2));
-    PointList.push_back(PointInTime(2500,1));
-    PointList.push_back(PointInTime(3000,1));
+        PointList.push_back(PointInTime(ms,num+1));
+    }    
 
     std::vector<sf::Sprite> SpriteList;
     for(int i = 0; i < PointList.size(); i++)
@@ -71,7 +78,6 @@ int main()
         if(PointList[i].time < 1500)
         {
             sprite.move(0,((double)(1500-PointList[i].time))*480/1500);
-            std::cout << ((double)(1500-PointList[i].time))*480/1500<< std::endl;
             PointList[i].time = 0;
         }
         else
