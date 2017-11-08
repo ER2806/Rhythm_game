@@ -79,7 +79,6 @@ bool UpdateSpectrum(std::vector<quantum>& array, int time){
     return returnval != -1;
 }
 
-/*
 void printArrayToFIle(std::vector<quantum> array){
     FILE* f = fopen("output.txt", "w");
     for(int i = 0; i < array.size(); ++i){
@@ -89,7 +88,7 @@ void printArrayToFIle(std::vector<quantum> array){
         }
     }
 }
-*/
+
 void printArray(std::vector<quantum> array){
     for(int i = 0; i < array.size(); ++i){
         printf("\n%.5d: ", (i+1)*TDIFF);
@@ -131,6 +130,21 @@ std::vector<quantum> filterArray(std::vector<quantum> array){
     printArray(dotsOnBands);
 }
 
+std::vector<std::pair<int, int>> generateAnswer(std::vector<quantum> array){
+    std::vector<std::pair<int, int>> result;
+    for(int i = 0; i < array.size(); ++i){
+        for(int band = 0; band < BANDS; ++band){
+            if(array[i].y_line[band]){
+                std::pair<int, int> temp;
+                temp.first = (i+1)*TDIFF;
+                temp.second = band;
+                result.push_back(temp);
+            }
+        }
+    }
+    return result;
+}
+
 bool parse(std::string filename){
     if (HIWORD(BASS_GetVersion())!=BASSVERSION) {
         //Error("An incorrect version of BASS was loaded");
@@ -161,6 +175,7 @@ bool parse(std::string filename){
 
     printArray(array);
     std::vector<quantum> result = filterArray(array);
+
 
     BASS_Free();
     return 0;
