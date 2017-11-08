@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
+#include <fstream>
 
 
 struct PointInTime{
@@ -40,7 +41,18 @@ int main()
     texture.loadFromFile("sphere.png");
 
     std::vector<PointInTime> PointList;
+    /*ifstream in;
+    in.open("input.txt");
+    int64_t ms;
+    int num;                                      
+    while(in >> ms)
+    {   
+        in >> num;
+        PointList.push_back(ms,num);
+    }*/
+    
     PointList.push_back(PointInTime(1000,3));
+    PointList.push_back(PointInTime(700,2));
     PointList.push_back(PointInTime(0,2));
     PointList.push_back(PointInTime(2000,3));
     PointList.push_back(PointInTime(1500,1));
@@ -56,14 +68,16 @@ int main()
         sprite.setTextureRect(sf::IntRect(0, 0, 60, 60));
         sprite.setColor(sf::Color(255, 255, 255, 250));
         sprite.setPosition(width/2-100 + 50*PointList[i].line - 30, 20);
+        if(PointList[i].time < 1500)
+        {
+            sprite.move(0,((double)(1500-PointList[i].time))*480/1500);
+            std::cout << ((double)(1500-PointList[i].time))*480/1500<< std::endl;
+            PointList[i].time = 0;
+        }
+        else
+            PointList[i].time -= 1500;
         SpriteList.push_back(sprite);
     }
-
-    sf::Sprite PressedSprite;
-    PressedSprite.setTexture(texture);
-    PressedSprite.setTextureRect(sf::IntRect(0, 0, 60, 60));
-    PressedSprite.setColor(sf::Color(0, 174, 255, 250));
-    PressedSprite.setPosition(218, 150);
 
     float deltaTime = 0.0f;
     sf::Clock clock;
@@ -112,16 +126,13 @@ int main()
 
         for(int i = 0; i < SpriteList.size(); i++)
         {
-            if((PointList[i].time <= deltaTime) && (SpriteList[i].getPosition().y <= 520))
+            if((PointList[i].time <= deltaTime) && (SpriteList[i].getPosition().y <= 520)) // 1.7 cекунд на всю линию, 1.5 - до плашки
             {
                 if(!(((int)deltaTime) % 4))
                     SpriteList[i].move(0, 1);
                 window.draw(SpriteList[i]);
             } 
-            if(i == 1) 
-                std::cout << deltaTime << " " << SpriteList[i].getPosition().y << std::endl;        
         }
-        //window.draw(PressedSprite);
         window.display();
     }
 
