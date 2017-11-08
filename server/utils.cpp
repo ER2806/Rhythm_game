@@ -14,3 +14,10 @@ QString getPathToMusicsFile() {
     return QString ("/Users/mac/Documents/Technopark/RhytmGame/MyServer/music/");
 }
 
+QString getPathToPlaylist() {
+    return QString("/Users/mac/Documents/Technopark/RhytmGame/MyServer/music/playlist.txt");
+}
+
+QString getPathToParsedMusic() {
+    return QString ("/Users/mac/Documents/Technopark/RhytmGame/MyServer/music/");
+}

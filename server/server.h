@@ -26,6 +26,7 @@ private:
     void sendToClient(QTcpSocket* pSocket, const QString& str);
     void sendTrackToClient(QTcpSocket* client, QDataStream& in);
     void sendPlaylistToClient(QTcpSocket* client, QDataStream& in);
+    void sendParsedMusicToClient(QTcpSocket* client, QDataStream& in);
     void sendErrorMsgToClient(QTcpSocket* client, quint8 err_code);
 
 };

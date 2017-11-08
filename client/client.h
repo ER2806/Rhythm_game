@@ -17,14 +17,12 @@
 class Client: public QWidget {
 Q_OBJECT
 public:
-    bool is_executed_response = false;
 
-    Client(const QString& host, int port, QWidget* parent = 0);
+    Client(const std::string& host, int port, QWidget* parent = 0);
     ~Client();
-    QString getTrackFromServer(quint8& error_code, QString& track_name); // qstring or music_id
-    std::vector<std::string> getPlaylistFromServer(quint8& error_code);
-    void sendGetTrack(quint8 command, QString& track_name);
-
+    std::string getTrackFromServer(uint8_t& error_code, std::string& track_name); // qstring or music_id
+    std::string getParsedTrackFromServer(uint8_t& error_code, std::string& track_name);
+    std::vector<std::string> getPlaylistFromServer(uint8_t& error_code);
 
 private slots:
     void slotReadyRead   (                            );
@@ -39,8 +37,10 @@ private:
     bool is_error;
     quint8 err_code;
     QString buff;
+    bool is_executed_response = false;
     std::vector<std::string> playlist;
     std::vector<quint8> requestes;
+    void sendGetTrack(quint8 command, QString& track_name);
     void responseManager(QTcpSocket* client, QDataStream& in);
 
 };

@@ -8,20 +8,21 @@
 
 
 enum Commands {
-    ERROR, GET_MUSIC, GET_PLAYLIST
+    ERROR, GET_MUSIC, GET_PLAYLIST, GET_PARSED_MUSIC
 };
 
 enum ErrorCodes {
-    ALL_OK, TRACK_NOT_FOUND, PLAYLIST_NOT_FOUND, ERR3, ERR4
+    ALL_OK, TRACK_NOT_FOUND, PLAYLIST_NOT_FOUND, FILE_NOT_CREAT, ERR4
 };
 
 
 int getPort();
 
-QString getIpAddr();
+std::string getIpAddr();
 
 QString getPathToMusicsFile();
 
+QString getPathToParsedMusicsFile();
 void delay(int msec_to_wait);
 
 #endif // UTILS_H
