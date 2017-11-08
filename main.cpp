@@ -116,6 +116,18 @@ std::vector<quantum> filterArray(std::vector<quantum> array){
             }
         }
     }
+    for(int band = 0; band < BANDS; ++band){
+        for(int i = 0; i < dotsOnBands.size() - 2; i += 2){
+            if(dotsOnBands[i].y_line[band] == dotsOnBands[i+1].y_line[band] && dotsOnBands[i].y_line[band] == 1){
+                dotsOnBands[i+1].y_line[band] = 0;
+            }
+        }
+        for(int i = 1; i < dotsOnBands.size() - 2; i += 2){
+            if(dotsOnBands[i].y_line[band] == dotsOnBands[i+1].y_line[band] && dotsOnBands[i].y_line[band] == 1){
+                dotsOnBands[i+1].y_line[band] = 0;
+            }
+        }
+    }
     printArray(dotsOnBands);
 }
 
