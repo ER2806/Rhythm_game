@@ -9,6 +9,7 @@
 #include "stdio.h"
 #include "unistd.h"
 #include <vector>
+#include <array>
 
 #define SPECWIDTH 368	// display width (should be multiple of 4)
 #define SPECHEIGHT 1000	// height (changing requires palette adjustments too)
@@ -18,7 +19,9 @@
 */
 DWORD chan;
 
+/*
 struct quantum{
+    int y_line[BANDS];
     int* y_line;
 
     quantum(){
@@ -33,11 +36,10 @@ struct quantum{
     ~quantum(){
         delete[] y_line;
     }
-};
+};*/
 
 // select a file to play, and play it
 BOOL PlayFile(const std::string& filename){
-    char* file = new char[100];
     //strcpy(file, "/home/qskwx/Music/Skrillexfeat.mp3");
     //strcpy(file, filename.c_str());//"/home/qskwx/Music/stilldre.mp3");
     //strcpy(file, "/home/qskwx/Music/haddawa.wav");
@@ -52,8 +54,8 @@ BOOL PlayFile(const std::string& filename){
 }
 
 // update the spectrum display - the interesting bit :)
-bool UpdateSpectrum(std::vector<quantum>& array, int time){
-    quantum temp;
+bool UpdateSpectrum(std::vector<std::array<int, BANDS>>& array, int time){
+    std::array<int, BANDS> temp;
     int x,y;
     float fft[2048];
     int returnval = BASS_ChannelGetData(chan,fft,BASS_DATA_FFT2048); // get the FFT data
@@ -71,7 +73,7 @@ bool UpdateSpectrum(std::vector<quantum>& array, int time){
             maxy = std::max(maxy, y);
         }
         //printf("%.4d ", maxy);
-        temp.y_line[x] = maxy;
+        temp[x] = maxy;
     }
     array.push_back(temp);
     //std::cout << std::endl;
@@ -79,70 +81,88 @@ bool UpdateSpectrum(std::vector<quantum>& array, int time){
     return returnval != -1;
 }
 
-void printArrayToFIle(std::vector<quantum> array){
+void printArrayToFIle(std::vector<std::array<int, BANDS>> array){
     FILE* f = fopen("output.txt", "w");
     for(int i = 0; i < array.size(); ++i){
         fprintf(f, "\n%.5d: ", (i+1)*TDIFF);
         for(int j = 0; j < BANDS; ++j){
-            fprintf(f, "%.3d ", array[i].y_line[j]);
+            fprintf(f, "%.3d ", array[i][j]);
         }
     }
 }
 
-void printArray(std::vector<quantum> array){
+void printArray(std::vector<std::array<int, BANDS>>& array){
     for(int i = 0; i < array.size(); ++i){
         printf("\n%.5d: ", (i+1)*TDIFF);
         for(int j = 0; j < BANDS; ++j){
-            printf("%.3d ", array[i].y_line[j]);
+            printf("%.3d ", array[i][j]);
         }
     }
 }
 
-std::vector<quantum> filterArray(std::vector<quantum> array){
-    std::vector<quantum> dotsOnBands = array;
+std::vector<std::array<int, BANDS>> filterArray(std::vector<std::array<int, BANDS>> array){
+    std::vector<std::array<int, BANDS>> dotsOnBands = array;
     int lastmin = SPECHEIGHT;
     for(int band = 0; band < BANDS; ++band){
         for(int i = 0; i < array.size(); ++i){
-            if (array[i].y_line[band] > lastmin*1.5){
-                dotsOnBands[i].y_line[band] = 1;
-                lastmin = array[i].y_line[band];
+            if (array[i][band] > lastmin*1.5){
+                dotsOnBands[i][band] = 1;
+                lastmin = array[i][band];
             }
             else{
-                if (lastmin > array[i].y_line[band]){
-                    lastmin = array[i].y_line[band];
+                if (lastmin > array[i][band]){
+                    lastmin = array[i][band];
                 }
-                dotsOnBands[i].y_line[band] = 0;
+                dotsOnBands[i][band] = 0;
             }
         }
     }
     for(int band = 0; band < BANDS; ++band){
         for(int i = 0; i < dotsOnBands.size() - 2; i += 2){
-            if(dotsOnBands[i].y_line[band] == dotsOnBands[i+1].y_line[band] && dotsOnBands[i].y_line[band] == 1){
-                dotsOnBands[i+1].y_line[band] = 0;
+            if(dotsOnBands[i][band] == dotsOnBands[i+1][band] && dotsOnBands[i][band] == 1){
+                dotsOnBands[i+1][band] = 0;
             }
         }
         for(int i = 1; i < dotsOnBands.size() - 2; i += 2){
-            if(dotsOnBands[i].y_line[band] == dotsOnBands[i+1].y_line[band] && dotsOnBands[i].y_line[band] == 1){
-                dotsOnBands[i+1].y_line[band] = 0;
+            if(dotsOnBands[i][band] == dotsOnBands[i+1][band] && dotsOnBands[i][band] == 1){
+                dotsOnBands[i+1][band] = 0;
             }
         }
     }
     printArray(dotsOnBands);
+    return dotsOnBands;
 }
-
+/*
 std::vector<std::pair<int, int>> generateAnswer(std::vector<quantum> array){
-    std::vector<std::pair<int, int>> result;
+    return result;
+}
+*/
+
+void writeFile(std::string filename, std::vector<std::array<int, BANDS>>& array){
+    std::cout << "COME IN" << std::endl;
+    std::vector<std::pair<int, int>> answer;
     for(int i = 0; i < array.size(); ++i){
         for(int band = 0; band < BANDS; ++band){
-            if(array[i].y_line[band]){
+            if(array[i][band]){
+                std::cout << "AAAAA\n";
                 std::pair<int, int> temp;
                 temp.first = (i+1)*TDIFF;
                 temp.second = band;
-                result.push_back(temp);
+                answer.push_back(temp);
             }
         }
     }
-    return result;
+    std::cout << "\n";
+    std::cout << answer.size() << std::endl;
+    for(int i = 0; i < answer.size(); ++i){
+        std::cout << answer[i].first << answer[i].second << std::endl;
+    }
+
+    FILE* f = fopen("test", "w");
+    for(int i = 0; i < answer.size(); ++i){
+        fprintf(f, "%d %d\n", answer[i].first, answer[i].second);
+    }
+    fclose(f);
 }
 
 bool parse(std::string filename){
@@ -162,7 +182,7 @@ bool parse(std::string filename){
         return -1;
     }
 
-    std::vector<quantum> array;
+    std::vector<std::array<int, BANDS>> array;
 
     // setup update timer (20hz)
     bool returnval = true;
@@ -174,7 +194,11 @@ bool parse(std::string filename){
     }
 
     printArray(array);
-    std::vector<quantum> result = filterArray(array);
+    std::vector<std::array<int, BANDS>> result = filterArray(array);
+    printArray(result);
+    //std::vector<std::pair<int, int>> answer =
+    //generateAnswer(result);
+    writeFile(filename, result);
 
 
     BASS_Free();
