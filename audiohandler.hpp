@@ -1,15 +1,10 @@
 #ifndef AUDIOHANDLER_HPP
 #define AUDIOHANDLER_HPP
 #include <bass.h>
-
-#include <gtk/gtk.h>
-#include <string.h>
-#include <regex.h>
 #include <math.h>
-#include "bass.h"
-#include "iostream"
-#include "stdio.h"
-#include "unistd.h"
+#include <iostream>
+#include <stdio.h>
+#include <unistd.h>
 #include <vector>
 #include <array>
 

@@ -16,7 +16,7 @@ int playFile(const std::string& filename){
 }
 
 // update the spectrum display - the interesting bit :)
-int UpdateSpectrum(std::vector<std::array<int, BANDS>>& array, int time){
+int UpdateSpectrum(std::vector<std::array<int, BANDS>>& array){
     std::array<int, BANDS> temp;
     float fft[2048];
     int returnval = BASS_ChannelGetData(chan,fft,BASS_DATA_FFT2048); // get the FFT data
@@ -148,6 +148,7 @@ int writeFile(std::string filename, std::vector<std::array<int, BANDS>> array){
         fprintf(f, "%d %d\n", answer[i].first, answer[i].second);
     }
     fclose(f);
+    return 0;
 }
 
 int parse(std::string filename){
@@ -176,7 +177,7 @@ int parse(std::string filename){
     while(returnval){
         i += 50;
         usleep(TDIFF*1000);
-        returnval = UpdateSpectrum(array, i);
+        returnval = UpdateSpectrum(array);
     }
 
     printArray(array);
