@@ -6,17 +6,17 @@ DWORD chan;
 int playFile(const std::string& filename){
     if (!(chan=BASS_StreamCreateFile(FALSE,filename.c_str(),0,0,0))//BASS_SAMPLE_LOOP))
         && !(chan=BASS_MusicLoad(FALSE,filename.c_str(),0,0,BASS_MUSIC_RAMP,1))){//|BASS_SAMPLE_LOOP,1))) {
-        return 0;
+        return -1;
     }
     else {
-        BASS_ChannelPlay(chan,FALSE);
+        BASS_ChannelPlay(chan, FALSE);
         //std::cout << "GREAT" << std::endl;
-        return -1;
+        return 0;
     }
 }
 
 // update the spectrum display - the interesting bit :)
-int UpdateSpectrum(std::vector<std::array<int, BANDS>>& array){
+int updateSpectrum(std::vector<std::array<int, BANDS>>& array){
     std::array<int, BANDS> temp;
     float fft[2048];
     int returnval = BASS_ChannelGetData(chan,fft,BASS_DATA_FFT2048); // get the FFT data
@@ -37,8 +37,7 @@ int UpdateSpectrum(std::vector<std::array<int, BANDS>>& array){
         temp[x] = maxy;
     }
     array.push_back(temp);
-
-    return returnval != -1;
+    return returnval == -1;
 }
 
 void printArrayToFIle(const std::vector<std::array<int, BANDS>>& array){
@@ -133,7 +132,7 @@ int writeFile(std::string filename, std::vector<std::array<int, BANDS>> array){
     std::cout << "\n";
     std::cout << answer.size() << std::endl;
     for(int i = 0; i < answer.size(); ++i){
-        std::cout << answer[i].first << answer[i].second << std::endl;
+        std::cout << answer[i].first << " " << answer[i].second << std::endl;
     }
 
     int pointInd = filename.find_last_of('/');
@@ -163,7 +162,7 @@ int parse(std::string filename){
         return -1;
     }
 
-    if (!playFile(filename)) { // start a file playing
+    if (playFile(filename)) { // start a file playing
         std::cout << "Can't play" << std::endl;
         BASS_Free();
         return -1;
@@ -172,12 +171,8 @@ int parse(std::string filename){
     std::vector<std::array<int, BANDS>> array;
 
     // setup update timer (20hz)
-    bool returnval = true;
-    int i = 0;
-    while(returnval){
-        i += 50;
+    while(!updateSpectrum(array)){
         usleep(TDIFF*1000);
-        returnval = UpdateSpectrum(array);
     }
 
     printArray(array);
