@@ -125,7 +125,8 @@ void Server::sendPlaylistToClient(QTcpSocket *client, QDataStream &in) {
     out << quint32(0);
     out << quint8(Commands::GET_PLAYLIST);
 
-    out << QByteArray((char*)line.data(), line.size()*2);
+    //out << QByteArray((char*)line.data(), line.size()*2);
+    out << line.toUtf8();
     out.device()->seek(0);
     out<< quint32(block.size() - sizeof(quint32));
     //std::cout << "server client -> write" << std::endl;
@@ -158,7 +159,8 @@ void Server::sendParsedMusicToClient(QTcpSocket *client, QDataStream &in) {
     out << quint32(0);
     out << quint8(Commands::GET_PARSED_MUSIC);
 
-    out << QByteArray((char*)line.data(), line.size()*2);
+//    out << QByteArray((char*)line.data(), line.size()*2);
+    out << line.toUtf8();
     out.device()->seek(0);
     out<< quint32(block.size() - sizeof(quint32));
     //std::cout << "server client -> write" << std::endl;

@@ -104,18 +104,21 @@ void Client::responseManager(QTcpSocket* client, QDataStream& in){
         }
 
         case (Commands::GET_PARSED_MUSIC): {
-            //std::cout << "case 3" << std::endl;
+            std::cout << "case 3" << std::endl;
             QByteArray parsed_music;
             in >> parsed_music;
-            QString path = getPathToParsedMusicsFile() + "parsed";
-            //std::cout << path.toStdString() << std::endl;
+            QString path = getPathToParsedMusicsFile() + "parsed.txt";
+            std::cout << path.toStdString() << std::endl;
             QFile file(path);
             if (!file.open(QIODevice::WriteOnly)) {
                 err_code = ErrorCodes::FILE_NOT_CREAT;
                 return;
             }
+
             file.write(parsed_music);
             file.close();
+//            QFile file(path);
+
             buff = path;
             is_executed_response = true;
             break;
