@@ -1,15 +1,20 @@
+/* for merging
+#include <QCoreApplication>
+#include <QApplication>
+#include "utils.h"
+#include "client.h"
+*/
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include <fstream>
 
-
 struct PointInTime{
     int64_t time; // время в милисекундах с начала игры
     int line; // номер "струны" (1,2,3)
-    PointInTime(int64_t t, int l){
-        time = t;
-        line = l;
+    PointInTime(int64_t t, int l) : time(t), line(l){
     }
 };
 
@@ -20,23 +25,34 @@ void startGame() // cоздание клиента
 
 std::string getTrack() //получение адеса аудио
 {
-    //NewClient.getTrackFromServer();
+    /* for merging
+    QApplication a(argc, argv);
+    Client webClient(getIpAddr(), getPort());
+    uint8_t errorCode;
+    std::string request = "haddawa.wav";
+    std::string audioFilename = webClient.getTrackFromServer(errorCode, request);
+    */
     return "haddawa.wav";
 }
 
 std::string getParsedTrack()
 {
+    /* for merging
+    request = "haddawa.wav";
+    std::string textFilename = webClient.getParsedTrackFromServer(errorCode, request);
+    std::cout << textFilename << std::endl;
+    */
     return "test.txt";
 }
 
-int main()
+int main(int argc, char* argv[])
 {
     sf::SoundBuffer buffer;
-    if (!buffer.loadFromFile("haddawa.wav"))
+    if (!buffer.loadFromFile(getTrack()))
         return -1;
     sf::Sound sound;
     sound.setBuffer(buffer);
-    sound.play();
+    //sound.play();
 
     int width = 600, height = 600;
     sf::RenderWindow window(sf::VideoMode(width, height), "rhythm game");
@@ -58,14 +74,17 @@ int main()
 
     std::vector<PointInTime> PointList;
     std::ifstream in;
-    in.open("test.txt");
+ 
+    in.open(getParsedTrack());
     int64_t ms;
-    int num;                                      
+    int num;
+    sound.play();
     while(in >> ms)
-    {   
+    {
         in >> num;
+        std::cout << num << " " << ms << std::endl;
         PointList.push_back(PointInTime(ms,num+1));
-    }    
+    }
 
     std::vector<sf::Sprite> SpriteList;
     for(int i = 0; i < PointList.size(); i++)
@@ -88,10 +107,10 @@ int main()
     float deltaTime = 0.0f;
     sf::Clock clock;
     clock.restart();
-
+    int counterHit = 0;
+    int counterMiss = 0;
     while (window.isOpen())
     {
-        //deltaTime = clock.restart().asMilliseconds();
         deltaTime = clock.getElapsedTime().asMilliseconds();
 
         sf::Event event;
@@ -107,18 +126,63 @@ int main()
                 // key pressed
                 case sf::Event::KeyPressed:
                 {
-                    if (event.key.code == sf::Keyboard::A)
-                         for(int i = 0; i < SpriteList.size(); i++)
-                             if((PointList[i].line == 1) && (SpriteList[i].getPosition().y >= 400) && (SpriteList[i].getPosition().y <= 520))
+                    if (event.key.code == sf::Keyboard::A){
+                        int flag = 0;
+                        for(int i = 0; i < SpriteList.size(); i++)
+                        {
+                            if((PointList[i].line == 1) && (SpriteList[i].getPosition().y >= 420)
+                                    && (SpriteList[i].getPosition().y <= 520)
+                                    && (SpriteList[i].getColor() != sf::Color(0,174,255,250)))
+                            {
                                 SpriteList[i].setColor(sf::Color(0, 174, 255, 250));
+                                flag = 1;
+                                counterHit++;
+
+                            }
+                        }
+                        if(!flag)
+                        {
+                            counterMiss++;
+                        }
+                    }
                     if (event.key.code == sf::Keyboard::S)
+                    {
+                        int flag = 0;
                         for(int i = 0; i < SpriteList.size(); i++)
-                             if((PointList[i].line == 2) && (SpriteList[i].getPosition().y >= 400) && (SpriteList[i].getPosition().y <= 520))
+                        {
+                            if((PointList[i].line == 2) && (SpriteList[i].getPosition().y >= 420)
+                                    && (SpriteList[i].getPosition().y <= 520)
+                                    && (SpriteList[i].getColor() != sf::Color(0,174,255,250)))
+                            {
                                 SpriteList[i].setColor(sf::Color(0, 174, 255, 250));
-                    if (event.key.code == sf::Keyboard::D)  
+                                flag = 1;
+                                counterHit++;
+                            }
+                        }
+                        if(!flag)
+                        {
+                            counterMiss++;
+                        }
+                    }
+                    if (event.key.code == sf::Keyboard::D)
+                    {
+                        int flag = 0;
                         for(int i = 0; i < SpriteList.size(); i++)
-                             if((PointList[i].line == 3) && (SpriteList[i].getPosition().y >= 400) && (SpriteList[i].getPosition().y <= 520))
-                                SpriteList[i].setColor(sf::Color(0, 174, 255, 250));              
+                        {
+                            if((PointList[i].line == 3) && (SpriteList[i].getPosition().y >= 420)
+                                    && (SpriteList[i].getPosition().y <= 520)
+                                    && (SpriteList[i].getColor() != sf::Color(0,174,255,250)))
+                            {
+                                SpriteList[i].setColor(sf::Color(0, 174, 255, 250));
+                                flag = 1;
+                                counterHit++;
+                            }
+                        }
+                        if(!flag)
+                        {
+                            counterMiss++;
+                        }
+                    }
                     break;
                 }
             }
@@ -134,13 +198,15 @@ int main()
         {
             if((PointList[i].time <= deltaTime) && (SpriteList[i].getPosition().y <= 520)) // 1.7 cекунд на всю линию, 1.5 - до плашки
             {
-                if(!(((int)deltaTime) % 4))
+                SpriteList[i].move(0, 1);
+                if(!(((int)deltaTime)%4))
                     SpriteList[i].move(0, 1);
                 window.draw(SpriteList[i]);
-            } 
+            }
         }
         window.display();
     }
+    std::cout << "\nmiss counter = " << counterMiss << "\nhit counter = " << counterHit << std::endl;
 
     return 0;
 }
