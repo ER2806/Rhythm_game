@@ -16,6 +16,7 @@
 
 class Client: public QWidget {
 Q_OBJECT
+
 public:
 
     Client(const std::string& host, int port, QWidget* parent = 0);
@@ -40,9 +41,18 @@ private:
     bool is_executed_response = false;
     std::vector<std::string> playlist;
     std::vector<quint8> requestes;
-    void sendGetTrack(quint8 command, QString& track_name);
+    void sendGetTrack(std::string& track_name, quint8 command);
+    void sendGetPlaylist();
     void responseManager(QTcpSocket* client, QDataStream& in);
 
+public:
+    void parseResponseGetErrorMsg(QDataStream& in);
+    void parseResponseGetMusic(QDataStream& in);
+    void parseResponseGetParsedMusic(QDataStream& in);
+    void parseResponseGetPlaylist(QDataStream& in);
+
 };
+
+#include "client_commands.h"
 
 #endif // CLIENT_H

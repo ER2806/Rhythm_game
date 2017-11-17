@@ -1,6 +1,7 @@
 #include "server.h"
 #include <QTextStream>
 #include <QVector>
+//#include "server_commands.h"
 
 Server::Server(int port, QWidget* parent/* = 0*/) : QWidget(parent), next_block_size(0) {
 
@@ -51,35 +52,43 @@ void Server::slotReadClient() {
         if (client->bytesAvailable() < next_block_size)
             break;
         next_block_size = 0;
-        quint8 command;
-        in >> command;
-        switch (command){
-            /* case 1: args QString track_name or id */
-            case (Commands::GET_MUSIC) /*GETTRACK*/: {
-                //std::cout << "server case 1" << std::endl;
-                sendTrackToClient(client, in);
-                break;
-            }
-
-            case (Commands::GET_PLAYLIST) /*GEtPlalist*/: {
-                //std::cout << "server case 2" << std::endl;
-                sendPlaylistToClient(client, in);
-                break;
-            }
-
-            case (Commands::GET_PARSED_MUSIC): {
-                //std::cout << "server case 3" << std::endl;
-                sendParsedMusicToClient(client, in);
-                break;
-            }
-            default: break;
-
-        }
-
+        requestManager(client, in);
     }
 
 }
 
+void Server::requestManager(QTcpSocket *client, QDataStream &in) {
+    quint8 command;
+    in >> command;
+    switch (command){
+        /* case 1: args QString track_name or id */
+        case (Commands::GET_MUSIC) /*GETTRACK*/: {
+            //std::cout << "server case 1" << std::endl;
+            //sendTrackToClient(client, in);
+            SendTrack comm(client, in);
+            comm.execute(*this);
+            break;
+        }
+
+        case (Commands::GET_PLAYLIST) /*GEtPlalist*/: {
+            //std::cout << "server case 2" << std::endl;
+            //sendPlaylistToClient(client, in);
+            SendPlaylist comm(client, in);
+            comm.execute(*this);
+            break;
+        }
+
+        case (Commands::GET_PARSED_MUSIC): {
+            //std::cout << "server case 3" << std::endl;
+            //sendParsedMusicToClient(client, in);
+            SendParsedTrack comm(client, in);
+            comm.execute(*this);
+            break;
+        }
+        default: break;
+
+    }
+}
 
 void Server::sendTrackToClient(QTcpSocket* client, QDataStream& in) {
 

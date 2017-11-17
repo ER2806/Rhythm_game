@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <functional>
 #include <sstream>
-
+//#include "client_commands.h"
 
 Client::Client(const std::string& host, int port, QWidget* parent): QWidget(parent), next_block_size(0) {
 
@@ -39,7 +39,6 @@ void Client::slotReadyRead() {
                 break;
             }
             in >> next_block_size;
-//            std::cout << "next_block_size = " << next_block_size << std::endl;
         }
 
         if (client->bytesAvailable() < next_block_size) {
@@ -60,67 +59,27 @@ void Client::responseManager(QTcpSocket* client, QDataStream& in){
     in >> comm;
     switch (comm) {
         case (Commands::ERROR): {
-            //std::cout << "case 0 " << std::endl;
-            in >> err_code;
-            is_executed_response = true;
+            ParsedGetErrorMsg comm;
+            comm.execute(*this, in);
             break;
 
         }
 
         case (Commands::GET_MUSIC): {
-            //std::cout << "case 1" << std::endl;
-            QByteArray music;
-            in >> music;
-            QString path = getPathToMusicsFile() + "new.wav";
-            QFile file2(path);
-
-             if (!file2.open(QIODevice::WriteOnly)){
-                 err_code = ErrorCodes::FILE_NOT_CREAT;
-                 return;
-             }
-
-             file2.write(music.data(), music.size());
-             file2.close();
-             buff = path;
-             is_executed_response = true;
+             ParseGetMusic comm;
+             comm.execute(*this, in);
              break;
         }
 
         case (Commands::GET_PLAYLIST): {
-            //std::cout << "case 2" << std::endl;
-            QByteArray playlist;
-            in >> playlist;
-            std::string res = playlist.toStdString();
-            std::replace(res.begin(), res.end(), '\n', ' ');
-            std::stringstream ss(res);
-            this->playlist.clear();
-            std::string tmp;
-            while(ss >> tmp){
-                //std::cout << tmp << std::endl;
-                this->playlist.push_back(tmp);
-            }
-            is_executed_response = true;
+            ParseGetPlaylist comm;
+            comm.execute(*this, in);
             break;
         }
 
         case (Commands::GET_PARSED_MUSIC): {
-            std::cout << "case 3" << std::endl;
-            QByteArray parsed_music;
-            in >> parsed_music;
-            QString path = getPathToParsedMusicsFile() + "parsed.txt";
-            std::cout << path.toStdString() << std::endl;
-            QFile file(path);
-            if (!file.open(QIODevice::WriteOnly)) {
-                err_code = ErrorCodes::FILE_NOT_CREAT;
-                return;
-            }
-
-            file.write(parsed_music);
-            file.close();
-//            QFile file(path);
-
-            buff = path;
-            is_executed_response = true;
+            ParseGetParsedMusic comm;
+            comm.execute(*this, in);
             break;
 
         }
@@ -166,13 +125,14 @@ void Client::slotConnected() {
 }
 
 
-void Client::sendGetTrack(quint8 command, QString &track_name) {
-
+void Client::sendGetTrack(std::string& track_name, quint8 command) {
+    is_executed_response = false;
+    err_code = ErrorCodes::ALL_OK;
     QByteArray  arrBlock;
     QDataStream out(&arrBlock, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_7);
-    out << quint16(0) << quint8(command);
-    out << track_name;
+    out << quint16(0) << command;
+    out << QString::fromStdString(track_name);
     out.device()->seek(0);
     out << quint16(arrBlock.size() - sizeof(quint16));
     client->write(arrBlock);
@@ -180,20 +140,23 @@ void Client::sendGetTrack(quint8 command, QString &track_name) {
 }
 
 
-std::string Client::getTrackFromServer(uint8_t& error_code, std::string& track_name) {
+void Client::sendGetPlaylist() {
 
     is_executed_response = false;
     err_code = ErrorCodes::ALL_OK;
     QByteArray  arrBlock;
     QDataStream out(&arrBlock, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_7);
-    out << quint16(0) << quint8(Commands::GET_MUSIC);
-    out << QString::fromStdString(track_name);
+    out << quint16(0) << quint8(Commands::GET_PLAYLIST);
     out.device()->seek(0);
     out << quint16(arrBlock.size() - sizeof(quint16));
     client->write(arrBlock);
 
-//    sendGetTrack(quint8(Commands::GET_MUSIC), track_name);
+}
+
+std::string Client::getTrackFromServer(uint8_t& error_code, std::string& track_name) {
+    sendGetTrack(track_name, Commands::GET_MUSIC);
+
 
     while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
         delay(100);
@@ -206,16 +169,7 @@ std::string Client::getTrackFromServer(uint8_t& error_code, std::string& track_n
 
 std::string Client::getParsedTrackFromServer(uint8_t& error_code, std::string& track_name) {
 
-    is_executed_response = false;
-    err_code = ErrorCodes::ALL_OK;
-    QByteArray arrBlock;
-    QDataStream out(&arrBlock, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_7);
-    out << quint16(0) << quint8(Commands::GET_PARSED_MUSIC);
-    out << QString::fromStdString(track_name);
-    out.device()->seek(0);
-    out << quint16(arrBlock.size() - sizeof(quint16));
-    client->write(arrBlock);
+    sendGetTrack(track_name, Commands::GET_PARSED_MUSIC);
 
     while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
         delay(100);
@@ -228,16 +182,7 @@ std::string Client::getParsedTrackFromServer(uint8_t& error_code, std::string& t
 
 std::vector<std::string> Client::getPlaylistFromServer(uint8_t& error_code) {
 
-    is_executed_response = false;
-    err_code = ErrorCodes::ALL_OK;
-    QByteArray  arrBlock;
-    QDataStream out(&arrBlock, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_7);
-    out << quint16(0) << quint8(Commands::GET_PLAYLIST);
-    out.device()->seek(0);
-    out << quint16(arrBlock.size() - sizeof(quint16));
-    //std::cout << "client -  write get playlist" << std::endl;
-    client->write(arrBlock);
+    sendGetPlaylist();
 
     while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
         delay(100);
@@ -246,4 +191,57 @@ std::vector<std::string> Client::getPlaylistFromServer(uint8_t& error_code) {
     error_code = err_code;
     return playlist;
 
+}
+
+void Client::parseResponseGetErrorMsg(QDataStream &in) {
+    in >> err_code;
+    is_executed_response = true;
+}
+
+void Client::parseResponseGetMusic(QDataStream &in) {
+    QByteArray music;
+    in >> music;
+    QString path = getPathToMusicsFile() + "new.wav";
+    QFile file2(path);
+
+     if (!file2.open(QIODevice::WriteOnly)){
+         err_code = ErrorCodes::FILE_NOT_CREAT;
+         return;
+     }
+
+     file2.write(music.data(), music.size());
+     file2.close();
+     buff = path;
+     is_executed_response = true;
+}
+
+void Client::parseResponseGetParsedMusic(QDataStream &in) {
+    QByteArray parsed_music;
+    in >> parsed_music;
+    QString path = getPathToParsedMusicsFile() + "parsed.txt";
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly)) {
+        err_code = ErrorCodes::FILE_NOT_CREAT;
+        return;
+    }
+
+    file.write(parsed_music);
+    file.close();
+
+    buff = path;
+    is_executed_response = true;
+}
+
+void Client::parseResponseGetPlaylist(QDataStream &in) {
+    QByteArray playlist;
+    in >> playlist;
+    std::string res = playlist.toStdString();
+    std::replace(res.begin(), res.end(), '\n', ' ');
+    std::stringstream ss(res);
+    this->playlist.clear();
+    std::string tmp;
+    while(ss >> tmp){
+        this->playlist.push_back(tmp);
+    }
+    is_executed_response = true;
 }

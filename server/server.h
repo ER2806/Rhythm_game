@@ -8,7 +8,8 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QDataStream>
-#include <utils.h>
+#include "utils.h"
+
 
 class Server: public QWidget
 {
@@ -20,9 +21,10 @@ public:
 public slots:
     virtual void slotNewConnection();
             void slotReadClient   ();
-private:
+public:
     QTcpServer* tcp_server;
     quint16 next_block_size;
+    void requestManager(QTcpSocket* client, QDataStream& in);
     void sendToClient(QTcpSocket* pSocket, const QString& str);
     void sendTrackToClient(QTcpSocket* client, QDataStream& in);
     void sendPlaylistToClient(QTcpSocket* client, QDataStream& in);
@@ -31,4 +33,5 @@ private:
 
 };
 
+#include "server_commands.h"
 #endif // SERVER_H
