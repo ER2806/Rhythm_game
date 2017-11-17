@@ -23,6 +23,7 @@ std::string getIpAddr();
 QString getPathToMusicsFile();
 
 QString getPathToParsedMusicsFile();
+
 void delay(int msec_to_wait);
 
 #endif // UTILS_H

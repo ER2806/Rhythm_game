@@ -9,14 +9,17 @@ int main(int argc, char *argv[])
     std::string name("shape.wav");
     std::string name2("test");
     quint8 error_code = 0;
-    std::vector<std::string> res =  client.getPlaylistFromServer(error_code);
-    for (auto i: res){
-        std::cout << i << std::endl;
+    for (int i = 0; i < 50; i++){
+        std::vector<std::string> res =  client.getPlaylistFromServer(error_code);
+        for (auto i: res){
+            std::cout << i << std::endl;
+        }
+        std::cout << "result getTrack = " << client.getTrackFromServer(error_code, name) << std::endl;
+        if (error_code)
+            std::cout << "Error" << std::endl;
+        std::cout << "result getParsed = " << client.getParsedTrackFromServer(error_code, name2) << std::endl;
+        delay(100);
     }
-    std::cout << "result getTrack = " << client.getTrackFromServer(error_code, name) << std::endl;
-    if (error_code)
-        std::cout << "Error" << std::endl;
-    std::cout << "result getParsed = " << client.getParsedTrackFromServer(error_code, name2) << std::endl;
 //    client.getParsedTrackFromServer(error_code, name2);
 //    for (int i = 0; i < 10; i++) {
 //        if (i % 2 == 1){

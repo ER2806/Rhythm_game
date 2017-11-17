@@ -33,7 +33,8 @@ private slots:
     void closed () {std::cout << "closed" << std::endl;}
 
 private:
-    QTcpSocket* client;
+    //QTcpSocket* client;
+    std::unique_ptr<QTcpSocket> client;
     quint32 next_block_size;
     bool is_error;
     quint8 err_code;
@@ -43,7 +44,7 @@ private:
     std::vector<quint8> requestes;
     void sendGetTrack(std::string& track_name, quint8 command);
     void sendGetPlaylist();
-    void responseManager(QTcpSocket* client, QDataStream& in);
+    void responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& in);
 
 public:
     void parseResponseGetErrorMsg(QDataStream& in);

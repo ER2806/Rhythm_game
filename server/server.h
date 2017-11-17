@@ -22,7 +22,7 @@ public slots:
     virtual void slotNewConnection();
             void slotReadClient   ();
 public:
-    QTcpServer* tcp_server;
+    std::unique_ptr<QTcpServer> tcp_server;
     quint16 next_block_size;
     void requestManager(QTcpSocket* client, QDataStream& in);
     void sendToClient(QTcpSocket* pSocket, const QString& str);

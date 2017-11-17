@@ -5,15 +5,15 @@
 #include <sstream>
 //#include "client_commands.h"
 
-Client::Client(const std::string& host, int port, QWidget* parent): QWidget(parent), next_block_size(0) {
-
+Client::Client(const std::string& host, int port, QWidget* parent): QWidget(parent), next_block_size(0)
+{
     this->is_executed_response = false;
 
-    client = new QTcpSocket(this);
+    client = std::move(std::unique_ptr<QTcpSocket>(new QTcpSocket(this)));
     client->connectToHost(QString::fromStdString(host), port);
-    connect(client, SIGNAL(connected()), SLOT(slotConnected()));
-    connect(client, SIGNAL(readyRead()), SLOT(slotReadyRead()));
-    connect(client, SIGNAL(error(QAbstractSocket::SocketError)),
+    connect(client.get(), SIGNAL(connected()), SLOT(slotConnected()));
+    connect(client.get(), SIGNAL(readyRead()), SLOT(slotReadyRead()));
+    connect(client.get(), SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(slotError(QAbstractSocket::SocketError)));
 
 }
@@ -27,7 +27,7 @@ Client::~Client(){
 
 void Client::slotReadyRead() {
 
-    QDataStream in(client);
+    QDataStream in(client.get());
     in.setVersion(QDataStream::Qt_5_7);
 
     if (!client->isOpen())
@@ -53,7 +53,7 @@ void Client::slotReadyRead() {
 }
 
 
-void Client::responseManager(QTcpSocket* client, QDataStream& in){
+void Client::responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& in){
 
     quint8 comm;
     in >> comm;
