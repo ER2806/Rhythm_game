@@ -4,19 +4,12 @@
 #include "utils.h"
 #include "client.h"
 */
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Audio/SoundBuffer.hpp>
-#include <SFML/Audio.hpp>
-#include <iostream>
-#include <fstream>
+#include "graph.hpp"
 
-struct PointInTime{
-    int64_t time; // время в милисекундах с начала игры
-    int line; // номер "струны" (1,2,3)
-    PointInTime(int64_t t, int l) : time(t), line(l){
-    }
-};
+#define WHITE (sf::Color(255, 255, 255, 250))
+#define BLUE (sf::Color(0,174,255,250))
+#define WIDTH 600
+#define HEIGHT 600
 
 void startGame() // cоздание клиента
 {
@@ -44,56 +37,31 @@ std::string getParsedTrack()
     */
     return "test.txt";
 }
-
-int main(int argc, char* argv[])
+            
+void createLines(std::vector<sf::RectangleShape>& RectanglesList)
 {
-    sf::SoundBuffer buffer;
-    if (!buffer.loadFromFile(getTrack()))
-        return -1;
-    sf::Sound sound;
-    sound.setBuffer(buffer);
-    //sound.play();
-
-    int width = 600, height = 600;
-    sf::RenderWindow window(sf::VideoMode(width, height), "rhythm game");
-    sf::RectangleShape line1(sf::Vector2f(height-100, 4));
-    line1.setPosition(width/2-50,50);
-    line1.rotate(90);
-    sf::RectangleShape line2(sf::Vector2f(height-100, 4));
-    line2.setPosition(width/2,50);
-    line2.rotate(90);
-    sf::RectangleShape line3(sf::Vector2f(height-100, 4));
-    line3.setPosition(width/2+50,50);
-    line3.rotate(90);
-    sf::RectangleShape lineh(sf::Vector2f(200, 4));
-    lineh.setPosition(width/2-100,480);
-
-    // Declare and load a texture
-    sf::Texture texture;
-    texture.loadFromFile("sphere.png");
-
-    std::vector<PointInTime> PointList;
-    std::ifstream in;
- 
-    in.open(getParsedTrack());
-    int64_t ms;
-    int num;
-    sound.play();
-    while(in >> ms)
+    for(int i = 0; i < 3; i++)
     {
-        in >> num;
-        std::cout << num << " " << ms << std::endl;
-        PointList.push_back(PointInTime(ms,num+1));
+        sf::RectangleShape line(sf::Vector2f(HEIGHT-100, 4));
+        line.setPosition(WIDTH/2 + 50*(i-1),50);
+        line.rotate(90);
+        RectanglesList.push_back(line);
     }
+    sf::RectangleShape lineh(sf::Vector2f(200, 4));
+    lineh.setPosition(WIDTH/2-100,480);
+    RectanglesList.push_back(lineh);
+}
 
+std::vector<sf::Sprite> createNodes(std::vector<PointInTime>& PointList, sf::Texture& texture)
+{   
     std::vector<sf::Sprite> SpriteList;
     for(int i = 0; i < PointList.size(); i++)
     {
         sf::Sprite sprite;
         sprite.setTexture(texture);
         sprite.setTextureRect(sf::IntRect(0, 0, 60, 60));
-        sprite.setColor(sf::Color(255, 255, 255, 250));
-        sprite.setPosition(width/2-100 + 50*PointList[i].line - 30, 20);
+        sprite.setColor(WHITE);
+        sprite.setPosition(WIDTH/2-100 + 50*PointList[i].line - 30, 20);
         if(PointList[i].time < 1500)
         {
             sprite.move(0,((double)(1500-PointList[i].time))*480/1500);
@@ -103,16 +71,124 @@ int main(int argc, char* argv[])
             PointList[i].time -= 1500;
         SpriteList.push_back(sprite);
     }
+    return SpriteList;
+}
+
+void createText(sf::Text& hit, sf::Text& miss, sf::Font& font)
+{    
+    hit.setString("0");
+    miss.setString("0");
+    hit.setFont(font);
+    miss.setFont(font);
+    hit.setCharacterSize(24);
+    miss.setCharacterSize(24);
+    hit.setFillColor(WHITE);
+    miss.setFillColor(WHITE);
+    hit.setPosition(10,10);
+    miss.setPosition(550,10);
+    return;
+}
+
+std::vector<PointInTime> getPoints()
+{
+    std::vector<PointInTime> PointList;
+    std::ifstream in;
+ 
+    in.open(getParsedTrack());
+    int64_t ms;
+    int num;
+    while(in >> ms)
+    {
+        in >> num;
+        std::cout << num << " " << ms << std::endl;
+        PointList.push_back(PointInTime(ms,num+1));
+    }
+    return PointList;
+}
+
+int keyboardReact(sf::Event& event, std::vector<sf::Sprite>& SpriteList, std::vector<PointInTime>& PointList)
+{
+    int line;
+    if (event.key.code == sf::Keyboard::A)
+        line = 1;
+    else if(event.key.code == sf::Keyboard::S)
+        line = 2;
+    else if(event.key.code == sf::Keyboard::D)
+        line = 3;
+
+    int flag = 0;
+    for(int i = 0; i < SpriteList.size(); i++)
+    {
+        if((PointList[i].line == line) && (SpriteList[i].getPosition().y >= 420)
+                                    && (SpriteList[i].getPosition().y <= 520)
+                                    && (SpriteList[i].getColor() != BLUE))
+            {
+                SpriteList[i].setColor(BLUE);
+                return 1; //hit
+            }
+    }
+    return -1; //miss    
+}
+
+void drawAll(std::vector<sf::RectangleShape>& RectanglesList, std::vector<sf::Sprite>& SpriteList, 
+    std::vector<PointInTime>& PointList, float deltaTime, sf::RenderWindow& window, sf::Text& hit, sf::Text& miss) 
+{
+    window.clear();
+    for(int i = 0; i < 4; i++)
+        window.draw(RectanglesList[i]);
+
+    for(int i = 0; i < SpriteList.size(); i++)
+    {
+        if((PointList[i].time <= deltaTime) && (SpriteList[i].getPosition().y <= 520)) // 1.7 cекунд на всю линию, 1.5 - до плашки
+        {
+            SpriteList[i].move(0, 1);
+            //if(!(((int)deltaTime)%4))
+            //    SpriteList[i].move(0, 1);
+            window.draw(SpriteList[i]);
+        }
+    }
+
+    window.draw(hit);
+    window.draw(miss);    
+    return;
+}
+
+int main(int argc, char* argv[])
+{
+    // big main try catch block
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "rhythm game");
+
+    std::vector<sf::RectangleShape> RectanglesList;    
+    createLines(RectanglesList);   
+    //try
+    std::vector<PointInTime> PointList = getPoints();  
+    //show error
+    sf::Texture texture;
+    //try
+    texture.loadFromFile("sphere.png");
+    std::vector<sf::Sprite> SpriteList = createNodes(PointList,texture);
+    
+    sf::SoundBuffer buffer;
+    //try -> show error
+    if (!buffer.loadFromFile(getTrack()))
+        return -1;
+    sf::Sound sound;
+    sound.setBuffer(buffer);
+    sound.play();
 
     float deltaTime = 0.0f;
     sf::Clock clock;
     clock.restart();
     int counterHit = 0;
     int counterMiss = 0;
+    sf::Text hit, miss;
+    sf::Font font;
+    // try -> show error
+    font.loadFromFile("VoniqueBold.ttf");
+    createText(hit, miss, font);
     while (window.isOpen())
     {
         deltaTime = clock.getElapsedTime().asMilliseconds();
-
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -122,91 +198,21 @@ int main(int argc, char* argv[])
                 case sf::Event::Closed:
                     window.close();
                     break;
-
                 // key pressed
                 case sf::Event::KeyPressed:
                 {
-                    if (event.key.code == sf::Keyboard::A){
-                        int flag = 0;
-                        for(int i = 0; i < SpriteList.size(); i++)
-                        {
-                            if((PointList[i].line == 1) && (SpriteList[i].getPosition().y >= 420)
-                                    && (SpriteList[i].getPosition().y <= 520)
-                                    && (SpriteList[i].getColor() != sf::Color(0,174,255,250)))
-                            {
-                                SpriteList[i].setColor(sf::Color(0, 174, 255, 250));
-                                flag = 1;
-                                counterHit++;
-
-                            }
-                        }
-                        if(!flag)
-                        {
-                            counterMiss++;
-                        }
-                    }
-                    if (event.key.code == sf::Keyboard::S)
-                    {
-                        int flag = 0;
-                        for(int i = 0; i < SpriteList.size(); i++)
-                        {
-                            if((PointList[i].line == 2) && (SpriteList[i].getPosition().y >= 420)
-                                    && (SpriteList[i].getPosition().y <= 520)
-                                    && (SpriteList[i].getColor() != sf::Color(0,174,255,250)))
-                            {
-                                SpriteList[i].setColor(sf::Color(0, 174, 255, 250));
-                                flag = 1;
-                                counterHit++;
-                            }
-                        }
-                        if(!flag)
-                        {
-                            counterMiss++;
-                        }
-                    }
-                    if (event.key.code == sf::Keyboard::D)
-                    {
-                        int flag = 0;
-                        for(int i = 0; i < SpriteList.size(); i++)
-                        {
-                            if((PointList[i].line == 3) && (SpriteList[i].getPosition().y >= 420)
-                                    && (SpriteList[i].getPosition().y <= 520)
-                                    && (SpriteList[i].getColor() != sf::Color(0,174,255,250)))
-                            {
-                                SpriteList[i].setColor(sf::Color(0, 174, 255, 250));
-                                flag = 1;
-                                counterHit++;
-                            }
-                        }
-                        if(!flag)
-                        {
-                            counterMiss++;
-                        }
-                    }
+                    if(keyboardReact(event, SpriteList, PointList) == 1)
+                        counterHit++;
+                    else
+                        counterMiss++;
                     break;
                 }
             }
         }
-
-        window.clear();
-        window.draw(line1);
-        window.draw(line2);
-        window.draw(line3);
-        window.draw(lineh);
-
-        for(int i = 0; i < SpriteList.size(); i++)
-        {
-            if((PointList[i].time <= deltaTime) && (SpriteList[i].getPosition().y <= 520)) // 1.7 cекунд на всю линию, 1.5 - до плашки
-            {
-                SpriteList[i].move(0, 1);
-                if(!(((int)deltaTime)%4))
-                    SpriteList[i].move(0, 1);
-                window.draw(SpriteList[i]);
-            }
-        }
+        hit.setString(std::to_string(counterHit));
+        miss.setString(std::to_string(counterMiss));
+        drawAll(RectanglesList, SpriteList, PointList, deltaTime, window, hit, miss);
         window.display();
     }
-    std::cout << "\nmiss counter = " << counterMiss << "\nhit counter = " << counterHit << std::endl;
-
     return 0;
 }
