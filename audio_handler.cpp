@@ -1,6 +1,6 @@
 #include "audio_handler.h"
 
-/*
+#ifdef DEBUG
 void printArray(const std::vector<std::array<int, BANDS>>& array){
     for(int i = 0; i < array.size(); ++i){
         printf("\n%.5d: ", (i+1)*TDIFF);
@@ -9,7 +9,7 @@ void printArray(const std::vector<std::array<int, BANDS>>& array){
         }
     }
 }
-*/
+#endif
 
 AudioHandler::AudioHandler(const std::string& filename) : sourceFilename(filename){
     if (HIWORD(BASS_GetVersion()) != BASSVERSION) {
@@ -35,20 +35,20 @@ int AudioHandler::updateSpectrumInTime(){
         return 1;
     }
     int b0_coef = 0;
-    for(int x = 0; x < BANDS; x++) {
-        int y;
-        int maxy = 0;
+    for(int X = 0; X < BANDS; X++) {
+        int Y;
+        int maxY = 0;
         float peak = 0;
-        int b1_coef = pow(2, x * 10.0/(BANDS-1));
+        int b1_coef = pow(2, X * 10.0/(BANDS-1));
         b1_coef = (b1_coef > 1023) ? 1023 : b1_coef;
         b1_coef = (b0_coef >= b1_coef) ? b0_coef + 1 : b1_coef;
         for (; b0_coef < b1_coef; b0_coef++){
             peak = (peak < fastFT[1 + b0_coef]) ? fastFT[1 + b0_coef] : peak;
-            y = sqrt(peak) * SPECHEIGHT; // scale it (sqrt to make low values more visible)
-            if (y > SPECHEIGHT) y = SPECHEIGHT; // cap it
-            maxy = std::max(maxy, y);
+            Y = sqrt(peak) * SPECHEIGHT; // scale it (sqrt to make low values more visible)
+            if (Y > SPECHEIGHT) Y = SPECHEIGHT; // cap it
+            maxY = std::max(maxY, Y);
         }
-        temp[x] = maxy;
+        temp[X] = maxY;
     }
     freqArray.push_back(temp);
     return 0;
@@ -61,7 +61,7 @@ void AudioHandler::startChannelPlay(){
     //channel = BASS_MusicLoad(FALSE, "haddawa.wav", 0, 0, BASS_MUSIC_RAMP, 1);
     //std::cout << sourceFilename << " " << channel << " " << BASS_ErrorGetCode() << std::endl;
     if (!BASS_ChannelPlay(channel, FALSE)){
-        std::cout << "FAAAAAAAAAALSE" << std::endl;
+        //std::cout << "FAAAAAAAAAALSE" << std::endl;
         BASS_Free();
         //throw
     }
