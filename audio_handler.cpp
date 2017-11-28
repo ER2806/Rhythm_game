@@ -54,12 +54,23 @@ int AudioHandler::updateSpectrumInTime(){
 void AudioHandler::parse(){
     musicWorker->startChannelPlay();
 
-    double musicLength = musicWorker->getLengthTimeInSeconds();
+    double musicLength = musicWorker->getLengthTimeInMsec();
 #ifdef DEBUG
     std::cout << musicLength << std::endl;
 #endif
+    double lastUpdateTime = 0 - TDIFF - TDIFF/100;
+    for(double playingTime = 0; playingTime < musicLength;
+        playingTime = musicWorker->getPlayingTimeInMsec()){
+        if ((playingTime - lastUpdateTime) >= TDIFF){
+            std::cout << playingTime << std::endl;
+            lastUpdateTime = playingTime;
+            updateSpectrumInTime();
+        }
+    }
+    /*
     for(double playingTime = 0; playingTime < musicLength;
         updateSpectrumInTime(), playingTime += TDIFF * 0.001, usleep(TDIFF*1000));
+    */
     buildDotsArray();
     runFilters();
     writeToFile();

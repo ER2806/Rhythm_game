@@ -9,7 +9,8 @@ public:
     ~AudioToFFTBass();
     std::vector<float> getFFT(const int fftSize);
     void startChannelPlay();
-    double getLengthTimeInSeconds();
+    double getLengthTimeInMsec();
+    double getPlayingTimeInMsec();
 private:
     DWORD audioChannel;
     std::string audioFilename;

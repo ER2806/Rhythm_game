@@ -17,10 +17,17 @@ AudioToFFTBass::~AudioToFFTBass(){
     BASS_Free();
 }
 
-double AudioToFFTBass::getLengthTimeInSeconds(){
+double AudioToFFTBass::getLengthTimeInMsec(){
     QWORD len = BASS_ChannelGetLength(audioChannel, BASS_POS_BYTE); // the length in bytes
-    return BASS_ChannelBytes2Seconds(audioChannel, len); // the length in seconds
+    return BASS_ChannelBytes2Seconds(audioChannel, len) * 1000; // the length in seconds
 }
+
+double AudioToFFTBass::getPlayingTimeInMsec(){
+    QWORD len = BASS_ChannelGetPosition(audioChannel, BASS_POS_BYTE);
+    return BASS_ChannelBytes2Seconds(audioChannel, len) * 1000;
+}
+
+
 
 std::vector<float> AudioToFFTBass::getFFT(const int size){
     float fastFT[2048];

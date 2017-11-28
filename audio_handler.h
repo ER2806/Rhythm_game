@@ -9,7 +9,7 @@
 
 const unsigned SPECHEIGHT = 1000;	// height (changing requires palette adjustments too)
 const unsigned BANDS = 3;
-const unsigned TDIFF = 50; // setup update timer (20hz)
+const double TDIFF = 50; // setup update timer (20hz)
 
 class AudioHandler{
 public:
