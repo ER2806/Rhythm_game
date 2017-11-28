@@ -1,17 +1,15 @@
 #ifndef AUDIOHANDLER_HPP
 #define AUDIOHANDLER_HPP
-#include <bass.h>
-#include <math.h>
-#include <iostream>
-#include <fstream>
-#include <stdio.h>
-#include <unistd.h>
 #include <vector>
 #include <array>
+#include <string>
+#include <bass.h>
+#include <audio_to_fft_bass.h>
+#include <audio_to_fft.h>
 
-#define SPECHEIGHT 1000	// height (changing requires palette adjustments too)
-#define BANDS 3
-#define TDIFF 50 // setup update timer (20hz)
+const unsigned SPECHEIGHT = 1000;	// height (changing requires palette adjustments too)
+const unsigned BANDS = 3;
+const unsigned TDIFF = 50; // setup update timer (20hz)
 
 class AudioHandler{
 public:
@@ -30,6 +28,7 @@ private:
     std::string sourceFilename;
     std::string dotsFilename;
     DWORD channel;
+    AudioToFFT* musicWorker;
 };
 
 #endif // AUDIOHANDLER_HPP

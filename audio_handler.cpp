@@ -1,4 +1,13 @@
+#define DEBUG
 #include "audio_handler.h"
+#include "audio_to_fft_bass.h"
+#include <math.h>
+#include <iostream>
+#include <fstream>
+#include <stdio.h>
+#include <unistd.h>
+#include <vector>
+#include <array>
 
 #ifdef DEBUG
 void printArray(const std::vector<std::array<int, BANDS>>& array){
@@ -12,31 +21,19 @@ void printArray(const std::vector<std::array<int, BANDS>>& array){
 #endif
 
 AudioHandler::AudioHandler(const std::string& filename) : sourceFilename(filename){
-    if (HIWORD(BASS_GetVersion()) != BASSVERSION) {
-        std::cout << "An incorrect version of BASS was loaded" << std::endl;
-        // throw
-    }
-
-    // initialize BASS
-    if (!BASS_Init(-1, 44100, 0, NULL, NULL)) {
-        std::cout << "Can't initialize device" << std::endl;
-        //throw
-    }
+    musicWorker = new AudioToFFTBass(filename);
 }
 
 AudioHandler::~AudioHandler(){
-    BASS_Free();
+    delete musicWorker;
 }
 
 int AudioHandler::updateSpectrumInTime(){
     std::array<int, BANDS> temp;
-    float fastFT[2048];
-    if(BASS_ChannelGetData(channel, fastFT, BASS_DATA_FFT2048) == -1){ // get the FFT data
-        return 1;
-    }
+    std::vector<float> fastFT = musicWorker->getFFT(2048);
     int b0_coef = 0;
     for(int X = 0; X < BANDS; X++) {
-        int Y;
+        int Y = 0;
         int maxY = 0;
         float peak = 0;
         int b1_coef = pow(2, X * 10.0/(BANDS-1));
@@ -54,26 +51,15 @@ int AudioHandler::updateSpectrumInTime(){
     return 0;
 }
 
-void AudioHandler::startChannelPlay(){
-    channel = BASS_StreamCreateFile(FALSE, sourceFilename.c_str(), 0, 0, 0);
-    //std::cout << sourceFilename << " " << channel << " " << BASS_ErrorGetCode() << std::endl;
-    //channel = BASS_MusicLoad(FALSE, sourceFilename.c_str(), 0, 0, BASS_MUSIC_RAMP, 1);
-    //channel = BASS_MusicLoad(FALSE, "haddawa.wav", 0, 0, BASS_MUSIC_RAMP, 1);
-    //std::cout << sourceFilename << " " << channel << " " << BASS_ErrorGetCode() << std::endl;
-    if (!BASS_ChannelPlay(channel, FALSE)){
-        //std::cout << "FAAAAAAAAAALSE" << std::endl;
-        BASS_Free();
-        //throw
-    }
-}
-
 void AudioHandler::parse(){
-    // big try catches
-    startChannelPlay();
-    while(!updateSpectrumInTime()){
-        usleep(TDIFF*1000);
-    }
-    //printArray(freqArray);
+    musicWorker->startChannelPlay();
+
+    double musicLength = musicWorker->getLengthTimeInSeconds();
+#ifdef DEBUG
+    std::cout << musicLength << std::endl;
+#endif
+    for(double playingTime = 0; playingTime < musicLength;
+        updateSpectrumInTime(), playingTime += TDIFF * 0.001, usleep(TDIFF*1000));
     buildDotsArray();
     runFilters();
     writeToFile();
@@ -154,9 +140,7 @@ void AudioHandler::writeToFile(){
     for(int i = 0; i < dotsArray.size(); ++i){
         for(int band = 0; band < BANDS; ++band){
             if(dotsArray[i][band]){
-                std::pair<int, int> temp;
-                temp.first = (i+1)*TDIFF;
-                temp.second = band;
+                auto temp = std::make_pair((i+1)*TDIFF, band);
                 answer.push_back(temp);
             }
         }
@@ -168,6 +152,9 @@ void AudioHandler::writeToFile(){
     //check file open
     for(int i = 0; i < answer.size(); ++i){
         offile << answer[i].first << " " << answer[i].second << std::endl;
+#ifdef DEBUG
+        std::cout << answer[i].first << " " << answer[i].second << std::endl;
+#endif
     }
     //std::cout << dotsFilename << std::endl;
 }
