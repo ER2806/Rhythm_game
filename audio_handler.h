@@ -23,8 +23,9 @@ private:
     void startChannelPlay();
     void makeDotsFilename();
     int updateSpectrumInTime();
-    std::vector<std::array<int, BANDS>> dotsArray;
-    std::vector<std::array<int, BANDS>> freqArray;
+    //std::vector<std::array<int, BANDS>> dotsArray;
+    std::array<std::vector<int>, BANDS> dotsArray;
+    std::array<std::vector<int>, BANDS> freqArray;
     std::string sourceFilename;
     std::string dotsFilename;
     DWORD channel;
