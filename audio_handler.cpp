@@ -1,6 +1,9 @@
 #define DEBUG
 #include "audio_handler.h"
 #include "audio_to_fft_bass.h"
+#include "make_response.h"
+#include "physical_response.h"
+#include "physical_response_textfile.h"
 #include <math.h>
 #include <algorithm>
 #include <iostream>
@@ -58,7 +61,6 @@ int AudioHandler::updateSpectrumInTime(){
 
 void AudioHandler::parse(){
     musicWorker->startChannelPlay();
-
     double musicLength = musicWorker->getLengthTimeInMsec();
 #ifdef DEBUG
     std::cout << musicLength << std::endl;
@@ -72,12 +74,17 @@ void AudioHandler::parse(){
             updateSpectrumInTime();
         }
     }
-    printArray(freqArray);
+    //printArray(freqArray);
     buildDotsArray();
-    printArray(dotsArray);
+    //printArray(dotsArray);
     runFilters();
-    printArray(dotsArray);
-    writeToFile();
+    //printArray(dotsArray);
+    //writeToFile();
+    PhysicalResponse* physResp = new PhysicalResponseTextfile(sourceFilename);
+    MakeResponse responseHandler(dotsArray);
+    responseHandler.response(physResp);
+
+    delete physResp;
 }
 
 void AudioHandler::buildDotsArray(){
