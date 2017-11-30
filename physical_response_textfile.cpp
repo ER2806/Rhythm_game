@@ -1,4 +1,5 @@
 #include "physical_response_textfile.h"
+#define DEBUG
 
 std::string makeDotsFilename(std::string sourceFilename){
     std::string dotsFilename = sourceFilename;
@@ -22,7 +23,7 @@ void PhysicalResponseTextfile::buildPhysicalResponse(std::vector<std::pair<int, 
     for(int i = 0; i < data.size(); ++i){
         offile << data[i].first << " " << data[i].second << std::endl;
 #ifdef DEBUG
-        std::cout << dataToWrite[i].first << " " << dataToWrite[i].second << std::endl;
+        std::cout << data[i].first << " " << data[i].second << std::endl;
 #endif
     }
 }
