@@ -2,6 +2,7 @@
 #define MAKE_RESPONSE_HPP
 #include "audio_handler.h"
 #include "physical_response.h"
+#include <algorithm>
 
 class MakeResponse
 {

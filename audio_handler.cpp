@@ -4,6 +4,8 @@
 #include "make_response.h"
 #include "physical_response.h"
 #include "physical_response_textfile.h"
+#include "filter_interface.h"
+#include "basic_filter.h"
 #include <math.h>
 #include <algorithm>
 #include <iostream>
@@ -75,11 +77,15 @@ void AudioHandler::parse(){
         }
     }
     //printArray(freqArray);
-    buildDotsArray();
+    buildDotsFromFreq();
     //printArray(dotsArray);
-    runFilters();
+    FilterInterface* filter = new BasicFilter(dotsArray);
+    dotsArray = filter->runFilters();
+    delete filter;
+    //runFilters();
     //printArray(dotsArray);
-    //writeToFile();
+
+
     PhysicalResponse* physResp = new PhysicalResponseTextfile(sourceFilename);
     MakeResponse responseHandler(dotsArray);
     responseHandler.response(physResp);
@@ -87,7 +93,7 @@ void AudioHandler::parse(){
     delete physResp;
 }
 
-void AudioHandler::buildDotsArray(){
+void AudioHandler::buildDotsFromFreq(){
     dotsArray = freqArray;
     int lastmin = SPECHEIGHT;
     for(int band = 0; band < BANDS; ++band){

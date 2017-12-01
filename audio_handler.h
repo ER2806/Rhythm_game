@@ -18,7 +18,7 @@ public:
     void parse();
 private:
     void writeToFile();
-    void buildDotsArray();
+    void buildDotsFromFreq();
     void runFilters();
     void startChannelPlay();
     void makeDotsFilename();

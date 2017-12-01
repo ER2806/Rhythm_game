@@ -18,13 +18,13 @@ PhysicalResponseTextfile::PhysicalResponseTextfile(std::string filename)
 void PhysicalResponseTextfile::buildPhysicalResponse(std::vector<std::pair<int, int>> data){
     std::string dotsFilename = makeDotsFilename(filename);
     std::ofstream offile;
-    offile.open(dotsFilename.c_str(), std::ofstream::out);
     //check file open
-    for(int i = 0; i < data.size(); ++i){
-        offile << data[i].first << " " << data[i].second << std::endl;
+    offile.open(dotsFilename.c_str(), std::ofstream::out);
+    for(const auto elm: data){
 #ifdef DEBUG
-        std::cout << data[i].first << " " << data[i].second << std::endl;
+        std::cout << elm.first << " " << elm.second << std::endl;
 #endif
+        offile << elm.first << " " << elm.second << std::endl;
     }
 }
 
