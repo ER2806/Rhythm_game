@@ -1,9 +1,10 @@
 #include "server.h"
 #include <QTextStream>
 #include <QVector>
-//#include "server_commands.h"
+#include "server_commands.h"
+#include "packmahager.h"
 
-Server::Server(int port, QWidget* parent/* = 0*/) : QWidget(parent), next_block_size(0) {
+Server::Server(int port, QObject* parent/* = 0*/) : QObject(parent), next_block_size(0) {
 
     tcp_server = std::move(std::unique_ptr<QTcpServer>(new QTcpServer(this)));
     if (!tcp_server->listen(QHostAddress::Any, port)) {
@@ -58,17 +59,22 @@ void Server::slotReadClient() {
 }
 
 void Server::requestManager(QTcpSocket *client, QDataStream &in) {
+    PackManager manag;
+    ResponseStruct str =  manag.packToStruct(in);
+    sendResultToClient(client, str);
+/*
     quint8 command;
     in >> command;
+    //PackToStruct(in);
     switch (command){
-        /* case 1: args QString track_name or id */
-        case (Commands::GET_MUSIC) /*GETTRACK*/: {
+        //case 1: args QString track_name or id
+        case (Commands::GET_MUSIC): {
             SendTrack comm(client, in);
             comm.execute(*this);
             break;
         }
 
-        case (Commands::GET_PLAYLIST) /*GEtPlalist*/: {
+        case (Commands::GET_PLAYLIST): {
             SendPlaylist comm(client, in);
             comm.execute(*this);
             break;
@@ -82,6 +88,7 @@ void Server::requestManager(QTcpSocket *client, QDataStream &in) {
         default: break;
 
     }
+    */
 }
 
 void Server::sendTrackToClient(QTcpSocket* client, QDataStream& in) {
@@ -95,6 +102,7 @@ void Server::sendTrackToClient(QTcpSocket* client, QDataStream& in) {
         sendErrorMsgToClient(client, ErrorCodes::TRACK_NOT_FOUND);
         return;
     }
+
     QByteArray track_bytes = file.readAll();
 
     QByteArray tmp;
@@ -171,4 +179,19 @@ void Server::sendErrorMsgToClient(QTcpSocket *client, quint8 err_code) {
     out << err_code;
     client->write(block);
 
+}
+
+void Server::sendResultToClient(QTcpSocket *client, ResponseStruct &str) {
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out << quint32(sizeof(str.comand) + str.data.size());
+    out << str;
+    //std::cout << "SIZE  = " <<  << std::endl;
+    std::cout << "Send Result To Client" << std::endl;
+    client->write(block);
+}
+
+void Server::PackToStruct(QDataStream &in) {
+    PackManager manag;
+    manag.packToStruct(in);
 }

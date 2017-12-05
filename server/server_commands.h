@@ -1,6 +1,7 @@
 #ifndef SERVER_COMMANDS_H
 #define SERVER_COMMANDS_H
 
+class Server;
 class ServerCommands {
 public:
     ServerCommands() = default;

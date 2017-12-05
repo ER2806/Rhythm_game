@@ -5,7 +5,7 @@
 #include <sstream>
 //#include "client_commands.h"
 
-Client::Client(const std::string& host, int port, QWidget* parent): QWidget(parent), next_block_size(0)
+Client::Client(const std::string& host, int port, QObject* parent): QObject(parent), next_block_size(0)
 {
     this->is_executed_response = false;
 
@@ -47,7 +47,7 @@ void Client::slotReadyRead() {
 
         next_block_size = 0;
         responseManager(client, in);
-
+        std::cout << "Read" << std::endl;
     }
 
 }
@@ -55,35 +55,70 @@ void Client::slotReadyRead() {
 
 void Client::responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& in){
 
-    quint8 comm;
-    in >> comm;
-    switch (comm) {
-        case (Commands::ERROR): {
-            ParsedGetErrorMsg comm;
-            comm.execute(*this, in);
+    ResponseStruct res;
+    in >> res;
+    std::cout << "RES = " << res.comand << std::endl;
+    if (res.comand == GET_MUSIC)
+        std::cout << "GET_MUSIC" << std::endl;
+
+    switch (res.comand) {
+        case(ERROR):{
+            QDataStream tmp(res.data);
+            parseResponseGetErrorMsg(tmp);
             break;
-
         }
-
-        case (Commands::GET_MUSIC): {
-             ParseGetMusic comm;
-             comm.execute(*this, in);
-             break;
-        }
-
-        case (Commands::GET_PLAYLIST): {
-            ParseGetPlaylist comm;
-            comm.execute(*this, in);
+        case(GET_MUSIC): {
+            QDataStream tmp(res.data);
+            parseResponseGetMusic(tmp);
             break;
         }
 
-        case (Commands::GET_PARSED_MUSIC): {
-            ParseGetParsedMusic comm;
-            comm.execute(*this, in);
+        case(GET_PARSED_MUSIC): {
+            QDataStream tmp(res.data);
+            parseResponseGetParsedMusic(tmp);
             break;
-
+        }
+        case(GET_PLAYLIST): {
+            QDataStream tmp(res.data);
+            parseResponseGetPlaylist(tmp);
+            break;
         }
     }
+
+
+//    QDataStream tmp(res.data);
+//    parseResponseGetMusic(tmp);
+//    quint8 comm;
+//    in >> comm;
+//    // Избавиться от switch case с помощью добавления шаблонного класса
+//    // который возвращает умный указатель на команду
+//    switch (comm) {
+//        case (Commands::ERROR): {
+//            ParsedGetErrorMsg comm;
+//            comm.execute(*this, in);
+//            break;
+
+//        }
+
+//        case (Commands::GET_MUSIC): {
+//             ParseGetMusic comm;
+//             comm.execute(*this, in);
+//             break;
+//        }
+
+//        case (Commands::GET_PLAYLIST): {
+//            ParseGetPlaylist comm;
+//            comm.execute(*this, in);
+//            break;
+//        }
+
+//        case (Commands::GET_PARSED_MUSIC): {
+//            ParseGetParsedMusic comm;
+//            comm.execute(*this, in);
+//            break;
+
+//        }
+//    }
 
 }
 
