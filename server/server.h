@@ -23,16 +23,11 @@ public slots:
     virtual void slotNewConnection();
             void slotReadClient   ();
 public:
+
     std::unique_ptr<QTcpServer> tcp_server;
     quint16 next_block_size;
     void requestManager(QTcpSocket* client, QDataStream& in);
-    void sendToClient(QTcpSocket* pSocket, const QString& str);
-    void sendTrackToClient(QTcpSocket* client, QDataStream& in);
-    void sendPlaylistToClient(QTcpSocket* client, QDataStream& in);
-    void sendParsedMusicToClient(QTcpSocket* client, QDataStream& in);
-    void sendErrorMsgToClient(QTcpSocket* client, quint8 err_code);
     void sendResultToClient(QTcpSocket* client, ResponseStruct& str);
-    void PackToStruct(QDataStream& in);
 
 };
 

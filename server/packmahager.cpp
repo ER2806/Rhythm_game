@@ -33,9 +33,7 @@ void PackManager::packMusic(QDataStream &in, ResponseStruct &res) {
     in >> track;
     QString path = getPathToMusicsFile() + track;
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly)){
-        //std::cout << "music not found" << std::endl;
-        //sendErrorMsgToClient(client, ErrorCodes::TRACK_NOT_FOUND);
+    if (!file.open(QIODevice::ReadOnly)){;
         packErrorMsg(res, ErrorCodes::TRACK_NOT_FOUND);
         return;
     }
@@ -52,9 +50,6 @@ void PackManager::packParsedMusic(QDataStream &in, ResponseStruct &res) {
     QFile file(path);
 
     if (!file.open(QIODevice::ReadOnly)) {
-        // audio_handler.parse_music( ... )
-        //std::cout << "Parsed Track is not found" << std::endl;
-        //sendErrorMsgToClient(client, ErrorCodes::PARSED_MUSIC_ERROR);
         packErrorMsg(res, ErrorCodes::PARSED_MUSIC_ERROR);
         return;
     }
@@ -73,7 +68,6 @@ void PackManager::packPlaylist(ResponseStruct &res) {
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cout << "Playlists is not found" << std::endl;
-        //sendErrorMsgToClient(client, ErrorCodes::PLAYLIST_NOT_FOUND);
         packErrorMsg(res, ErrorCodes::PLAYLIST_NOT_FOUND);
         return;
     }
