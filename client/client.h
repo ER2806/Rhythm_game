@@ -12,7 +12,7 @@
 #include <string>
 #include <QString>
 #include <utils.h>
-
+#include "../response_struct.h"
 
 class Client: public QWidget {
 Q_OBJECT
