@@ -1,5 +1,5 @@
 #include "packmahager.h"
-
+#include "packcommandstorage.h"
 
 ResponseStruct PackManager::packToStruct(QDataStream& in) {
 
@@ -7,23 +7,8 @@ ResponseStruct PackManager::packToStruct(QDataStream& in) {
     quint8 comm;
     in >> comm;
     out.comand = comm;
-    switch(comm) {
-        case(GET_MUSIC) :{
-            packMusic(in, out);
-            break;
-        }
-
-        case(GET_PARSED_MUSIC): {
-            packParsedMusic(in, out);
-            break;
-        }
-
-        case(GET_PLAYLIST): {
-            packPlaylist(out);
-            break;
-        }
-    }
-
+    PackCommandStorage &factory = PackCommandStorage::instance();
+    factory.getCommand(comm)()->execute(*this, in, out);
     return out;
 
 }
@@ -62,7 +47,7 @@ void PackManager::packParsedMusic(QDataStream &in, ResponseStruct &res) {
 }
 
 
-void PackManager::packPlaylist(ResponseStruct &res) {
+void PackManager::packPlaylist(QDataStream &in, ResponseStruct &res) {
 
     QFile file(getPathToPlaylist());
 

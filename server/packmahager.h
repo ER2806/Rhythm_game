@@ -14,11 +14,11 @@ public:
     PackManager() = default;
     ~PackManager() = default;
     ResponseStruct packToStruct(QDataStream& in);
-private:
+public:
 
     void packMusic(QDataStream& in, ResponseStruct& out);
     void packParsedMusic(QDataStream& in, ResponseStruct& out);
-    void packPlaylist(ResponseStruct& out);
+    void packPlaylist(QDataStream &in, ResponseStruct& out);
     void packErrorMsg(ResponseStruct &out, quint8);
 
     void writeFileContentToByteArray(QFile& file, QByteArray& out);
