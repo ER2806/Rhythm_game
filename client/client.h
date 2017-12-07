@@ -33,7 +33,6 @@ private slots:
     void closed () {std::cout << "closed" << std::endl;}
 
 private:
-    //QTcpSocket* client;
     std::unique_ptr<QTcpSocket> client;
     quint32 next_block_size;
     bool is_error;

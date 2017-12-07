@@ -9,7 +9,7 @@ Client::Client(const std::string& host, int port, QWidget* parent): QWidget(pare
 {
     this->is_executed_response = false;
 
-    client = std::move(std::unique_ptr<QTcpSocket>(new QTcpSocket(this)));
+    client = std::make_unique<QTcpSocket>(new QTcpSocket(this));
     client->connectToHost(QString::fromStdString(host), port);
     connect(client.get(), SIGNAL(connected()), SLOT(slotConnected()));
     connect(client.get(), SIGNAL(readyRead()), SLOT(slotReadyRead()));
@@ -19,9 +19,7 @@ Client::Client(const std::string& host, int port, QWidget* parent): QWidget(pare
 }
 
 Client::~Client(){
-
     client->close();
-
 }
 
 
@@ -84,41 +82,6 @@ void Client::responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& i
             break;
         }
     }
-
-
-//    QDataStream tmp(res.data);
-//    parseResponseGetMusic(tmp);
-//    quint8 comm;
-//    in >> comm;
-//    // Избавиться от switch case с помощью добавления шаблонного класса
-//    // который возвращает умный указатель на команду
-//    switch (comm) {
-//        case (Commands::ERROR): {
-//            ParsedGetErrorMsg comm;
-//            comm.execute(*this, in);
-//            break;
-
-//        }
-
-//        case (Commands::GET_MUSIC): {
-//             ParseGetMusic comm;
-//             comm.execute(*this, in);
-//             break;
-//        }
-
-//        case (Commands::GET_PLAYLIST): {
-//            ParseGetPlaylist comm;
-//            comm.execute(*this, in);
-//            break;
-//        }
-
-//        case (Commands::GET_PARSED_MUSIC): {
-//            ParseGetParsedMusic comm;
-//            comm.execute(*this, in);
-//            break;
-
-//        }
-//    }
 
 }
 

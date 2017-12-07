@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     Client client(getIpAddr(), getPort());
-    std::string name("shape1.wav");
+    std::string name("shape.wav");
     std::string name2("test2");
     quint8 error_code = 0;
     std::cout << client.getTrackFromServer(error_code, name) << std::endl;
