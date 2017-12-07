@@ -8,8 +8,14 @@ ResponseStruct PackManager::packToStruct(QDataStream& in) {
     in >> comm;
     out.comand = comm;
     PackCommandFactory &factory = PackCommandFactory::instance();
-    std::unique_ptr<BasePackCommand> command(factory.getCommand(comm));
-    command->execute(*this, in, out);
+    std::unique_ptr<BasePackCommand> command(factory.getCommand(10));
+
+    if (command) {
+        command->execute(*this, in, out);
+    } else {
+        LOG(ERROR) << "incorrect type of command from client socket";
+    }
+
     return out;
 
 }

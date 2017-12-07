@@ -36,8 +36,15 @@ public:
 
 
     BasePackCommand* getCommand(const int& key) {
+        std::map<int, std::unique_ptr<AbstractPackCommandCreator>>::iterator it = commands.find(key);
+        if (it != commands.end()) {
+            return it->second->create();
+            //return commands[key]->create();
+        } else {
 
-        return commands[key]->create();
+            return nullptr;
+
+        }
 
     }
 

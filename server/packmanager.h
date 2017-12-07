@@ -7,6 +7,7 @@
 #include <QFile>
 #include "../response_struct.h"
 #include "utils.h"
+#include "logging.h"
 
 class PackManager
 {
