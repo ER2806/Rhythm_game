@@ -8,7 +8,9 @@ public:
     ~PackPlaylist() = default;
 
     static BasePackCommand* createCommand() {
+
         return new PackPlaylist();
+
     }
 
     void execute(PackManager& pack, QDataStream& in, ResponseStruct& out) override {

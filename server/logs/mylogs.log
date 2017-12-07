@@ -1,0 +1,26 @@
+INFO 17:13:28 (virtual void Server::run()): Server started in port8000
+
+INFO 17:13:34 (virtual void Server::slotNewConnection()): new_connection to serv
+INFO 00:24:07 (virtual void Server::run()): Server started in port8000
+
+INFO 00:34:19 (virtual void Server::run()): Server started in port8000
+
+INFO 00:36:47 (virtual void Server::run()): Server started in port8000
+
+INFO 00:36:53 (virtual void Server::slotNewConnection()): new_connection to serv
+INFO 00:37:00 (virtual void Server::slotNewConnection()): new_connection to serv
+INFO 00:37:04 (virtual void Server::slotNewConnection()): new_connection to serv
+INFO 00:37:07 (virtual void Server::slotNewConnection()): new_connection to serv
+INFO 00:40:58 (virtual void Server::run()): Server started in port8000
+
+INFO 00:41:07 (virtual void Server::slotNewConnection()): new_connection to serv
+INFO 00:41:11 (virtual void Server::slotNewConnection()): new_connection to serv
+INFO 00:44:30 (virtual void Server::run()): Server started in port8000
+
+INFO 00:44:33 (virtual void Server::slotNewConnection()): new_connection to serv
+INFO 01:07:31 (virtual void Server::run()): Server started in port8000
+
+INFO 01:07:35 (virtual void Server::slotNewConnection()): new_connection to serv
+INFO 01:09:28 (virtual void Server::run()): Server started in port8000
+
+INFO 01:09:31 (virtual void Server::slotNewConnection()): new_connection to serv

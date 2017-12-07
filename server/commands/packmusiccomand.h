@@ -8,11 +8,15 @@ public:
     ~PackMusic() = default;
 
     static BasePackCommand* createCommand() {
+
         return new PackMusic();
+
     }
 
     void execute(PackManager& pack, QDataStream& in, ResponseStruct& out) override {
+
         pack.packMusic(in, out);
+
     }
 };
 
