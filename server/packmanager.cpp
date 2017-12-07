@@ -1,4 +1,4 @@
-#include "packmahager.h"
+#include "packmanager.h"
 #include "packcommandstorage.h"
 
 ResponseStruct PackManager::packToStruct(QDataStream& in) {
@@ -8,7 +8,8 @@ ResponseStruct PackManager::packToStruct(QDataStream& in) {
     in >> comm;
     out.comand = comm;
     PackCommandStorage &factory = PackCommandStorage::instance();
-    factory.getCommand(comm)()->execute(*this, in, out);
+    std::unique_ptr<BasePackCommand> command(factory.getCommand(comm)());
+    command->execute(*this, in, out);
     return out;
 
 }
