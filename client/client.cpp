@@ -19,7 +19,9 @@ Client::Client(const std::string& host, int port, QWidget* parent): QWidget(pare
 }
 
 Client::~Client(){
+
     client->close();
+
 }
 
 
@@ -55,7 +57,7 @@ void Client::responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& i
 
     ResponseStruct res;
     in >> res;
-    std::cout << "RES = " << res.comand << std::endl;
+    std::cout << "RES = " << static_cast<int>(res.comand) << std::endl;
     if (res.comand == GET_MUSIC)
         std::cout << "GET_MUSIC" << std::endl;
 
@@ -76,6 +78,7 @@ void Client::responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& i
             parseResponseGetParsedMusic(tmp);
             break;
         }
+
         case(GET_PLAYLIST): {
             QDataStream tmp(res.data);
             parseResponseGetPlaylist(tmp);
@@ -100,21 +103,6 @@ void Client::slotError(QAbstractSocket::SocketError err){
 
 }
 
-void Client::slotSendToServer() {
-
-    QByteArray  arrBlock;
-    QDataStream out(&arrBlock, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_7);
-    quint8 command = 1;
-    out << quint16(0) << quint8(command);
-    out << QString("human.mp3");
-    out.device()->seek(0);
-    out << quint16(arrBlock.size() - sizeof(quint16));
-
-    client->write(arrBlock);
-
-}
-
 
 void Client::slotConnected() {
 
@@ -124,37 +112,46 @@ void Client::slotConnected() {
 
 
 void Client::sendGetTrack(std::string& track_name, quint8 command) {
+
     is_executed_response = false;
     err_code = ErrorCodes::ALL_OK;
-    QByteArray  arrBlock;
-    QDataStream out(&arrBlock, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_7);
-    out << quint16(0) << command;
-    out << QString::fromStdString(track_name);
-    out.device()->seek(0);
-    out << quint16(arrBlock.size() - sizeof(quint16));
-    client->write(arrBlock);
+    ResponseStruct str = PackManager::packTrackName(track_name);
+    sendStructToServer(str);
 
 }
 
+void Client::sendGetParsedTrack(std::string& track_name) {
+
+    is_executed_response = false;
+    err_code = ErrorCodes::ALL_OK;
+    ResponseStruct str = PackManager::packParsedTrackName(track_name);
+    sendStructToServer(str);
+
+}
 
 void Client::sendGetPlaylist() {
 
     is_executed_response = false;
     err_code = ErrorCodes::ALL_OK;
-    QByteArray  arrBlock;
-    QDataStream out(&arrBlock, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_7);
-    out << quint16(0) << quint8(Commands::GET_PLAYLIST);
-    out.device()->seek(0);
-    out << quint16(arrBlock.size() - sizeof(quint16));
-    client->write(arrBlock);
+    ResponseStruct str = PackManager::packPlaylist();
+    sendStructToServer(str);
+
+}
+
+
+void Client::sendStructToServer(ResponseStruct& str) {
+
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out << quint16(sizeof(str.comand) + str.data.size());
+    out << str;
+    client->write(block);
 
 }
 
 std::string Client::getTrackFromServer(uint8_t& error_code, std::string& track_name) {
-    sendGetTrack(track_name, Commands::GET_MUSIC);
 
+    sendGetTrack(track_name, Commands::GET_MUSIC);
 
     while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
         delay(100);
@@ -167,8 +164,7 @@ std::string Client::getTrackFromServer(uint8_t& error_code, std::string& track_n
 
 std::string Client::getParsedTrackFromServer(uint8_t& error_code, std::string& track_name) {
 
-    sendGetTrack(track_name, Commands::GET_PARSED_MUSIC);
-
+    sendGetParsedTrack(track_name);
     while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
         delay(100);
     }
@@ -192,8 +188,10 @@ std::vector<std::string> Client::getPlaylistFromServer(uint8_t& error_code) {
 }
 
 void Client::parseResponseGetErrorMsg(QDataStream &in) {
+
     in >> err_code;
     is_executed_response = true;
+
 }
 
 void Client::parseResponseGetMusic(QDataStream &in) {
@@ -212,6 +210,7 @@ void Client::parseResponseGetMusic(QDataStream &in) {
      buff = path;
      is_executed_response = true;
 }
+
 
 void Client::parseResponseGetParsedMusic(QDataStream &in) {
     QByteArray parsed_music;
@@ -241,5 +240,6 @@ void Client::parseResponseGetPlaylist(QDataStream &in) {
     while(ss >> tmp){
         this->playlist.push_back(tmp);
     }
+
     is_executed_response = true;
 }

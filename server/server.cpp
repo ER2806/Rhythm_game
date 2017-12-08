@@ -39,6 +39,7 @@ void Server::slotNewConnection() {
 
     connect(client, SIGNAL(disconnected()), client, SLOT(deleteLater()));
     connect(client, SIGNAL(readyRead()), this, SLOT(slotReadClient()));
+
 }
 
 void Server::slotReadClient() {

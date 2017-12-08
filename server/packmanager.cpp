@@ -1,12 +1,16 @@
 #include "packmanager.h"
 #include "CommandFactory/packcommandfactory.h"
 
-ResponseStruct PackManager::packToStruct(QDataStream& in) {
+ResponseStruct PackManager::packToStruct(QDataStream& dstream) {
 
     ResponseStruct out;
-    quint8 comm;
-    in >> comm;
+    ResponseStruct str_in;
+    dstream >> str_in;
+    quint8 comm = str_in.comand;
+    QDataStream in(str_in.data);
+
     out.comand = comm;
+
     PackCommandFactory &factory = PackCommandFactory::instance();
     std::unique_ptr<BasePackCommand> command(factory.getCommand(comm));
 
@@ -14,7 +18,7 @@ ResponseStruct PackManager::packToStruct(QDataStream& in) {
         command->execute(*this, in, out);
 
     } else {
-        LOG(ERROR) << "incorrect type of command from client socket";
+        LOG(ERROR) << "Incorrect type of command from client socket. Command = " << comm;
     }
 
     return out;
@@ -61,9 +65,11 @@ void PackManager::packPlaylist(QDataStream &in, ResponseStruct &res) {
     QFile file(rout.getPath());
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        std::cout << "Playlists is not found" << std::endl;
+
+        LOG(ERROR) << "Playlist is not found. Playlist finding here: "  << rout.getPath();
         packErrorMsg(res, ErrorCodes::PLAYLIST_NOT_FOUND);
         return;
+
     }
 
     writeFileContentToByteArray(file, res.data);

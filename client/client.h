@@ -13,6 +13,7 @@
 #include <QString>
 #include <utils.h>
 #include "../response_struct.h"
+#include "packmanager.h"
 
 class Client: public QWidget {
 Q_OBJECT
@@ -28,7 +29,6 @@ public:
 private slots:
     void slotReadyRead   (                            );
     void slotError       (QAbstractSocket::SocketError);
-    void slotSendToServer(                            );
     void slotConnected   (                            );
     void closed () {std::cout << "closed" << std::endl;}
 
@@ -43,7 +43,9 @@ private:
     std::vector<quint8> requestes;
     void sendGetTrack(std::string& track_name, quint8 command);
     void sendGetPlaylist();
+    void sendGetParsedTrack(std::string& track_name);
     void responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& in);
+    void sendStructToServer(ResponseStruct&);
 
 public:
     void parseResponseGetErrorMsg(QDataStream& in);

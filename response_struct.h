@@ -9,14 +9,14 @@ struct ResponseStruct {
     QByteArray data;
 };
 
-inline QDataStream& operator<<(QDataStream& out, const ResponseStruct& str)
+inline QDataStream& operator << (QDataStream& out, const ResponseStruct& str)
 {
     out << str.comand;
     out << str.data;
     return out;
 }
 
-inline QDataStream& operator>>(QDataStream& out, ResponseStruct& str)
+inline QDataStream& operator >> (QDataStream& out, ResponseStruct& str)
 {
     out >> str.comand;
     out >> str.data;
