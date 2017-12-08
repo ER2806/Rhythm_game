@@ -8,7 +8,7 @@ ResponseStruct PackManager::packToStruct(QDataStream& in) {
     in >> comm;
     out.comand = comm;
     PackCommandFactory &factory = PackCommandFactory::instance();
-    std::unique_ptr<BasePackCommand> command(factory.getCommand(10));
+    std::unique_ptr<BasePackCommand> command(factory.getCommand(comm));
 
     if (command) {
         command->execute(*this, in, out);
