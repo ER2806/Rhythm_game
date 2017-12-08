@@ -6,8 +6,10 @@
 #include <QTextStream>
 #include <QFile>
 #include "../response_struct.h"
-#include "utils.h"
 #include "logging.h"
+#include "Routing/musicrouter.h"
+#include "Routing/parsedmusicrouter.h"
+#include "Routing/playlistrouter.h"
 
 class PackManager
 {

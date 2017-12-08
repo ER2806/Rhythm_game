@@ -6,8 +6,7 @@
 #include "../commands/packparsedmusic.h"
 #include "../commands/packmusiccomand.h"
 #include "../commands/packplaylist.h"
-#include "../utils.h"
-
+#include "../utils/enumcommands.h"
 
 class PackCommandFactory {
 private:

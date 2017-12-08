@@ -3,6 +3,7 @@
 
 #include <QByteArray>
 #include <QDataStream>
+
 struct ResponseStruct {
     quint8 comand;
     QByteArray data;

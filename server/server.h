@@ -9,7 +9,6 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QDataStream>
-#include "utils.h"
 #include "../response_struct.h"
 #include "baseserver.h"
 

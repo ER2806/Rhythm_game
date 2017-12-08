@@ -35,3 +35,8 @@ INFO 01:19:41 (virtual void Server::run()): Server started in port8000
 INFO 01:19:45 (virtual void Server::slotNewConnection()): new_connection to serv
 ERROR 01:19:45 (ResponseStruct PackManager::packToStruct(QDataStream &)): incorrect type of command from client socket
 ERROR 01:19:45 (ResponseStruct PackManager::packToStruct(QDataStream &)): incorrect type of command from client socket
+INFO 04:15:10 (virtual void Server::run()): Server started in port8000
+
+INFO 04:15:14 (virtual void Server::slotNewConnection()): new_connection to serv
+ERROR 04:15:14 (ResponseStruct PackManager::packToStruct(QDataStream &)): incorrect type of command from client socket
+ERROR 04:15:14 (ResponseStruct PackManager::packToStruct(QDataStream &)): incorrect type of command from client socket

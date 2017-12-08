@@ -12,6 +12,7 @@ ResponseStruct PackManager::packToStruct(QDataStream& in) {
 
     if (command) {
         command->execute(*this, in, out);
+
     } else {
         LOG(ERROR) << "incorrect type of command from client socket";
     }
@@ -56,7 +57,8 @@ void PackManager::packParsedMusic(QDataStream &in, ResponseStruct &res) {
 
 void PackManager::packPlaylist(QDataStream &in, ResponseStruct &res) {
 
-    QFile file(getPathToPlaylist());
+    PlaylistRouter rout;
+    QFile file(rout.getPath());
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cout << "Playlists is not found" << std::endl;
@@ -109,16 +111,15 @@ QString PackManager::getTrackNameFromStream(QDataStream &stream) {
 
 QString PackManager::createPathToMusic(QString& track){
 
-    QString tmp = getPathToMusicsFile();
-    std::cout << tmp.toStdString() << std::endl;
-    std::cout<< (tmp.append(track)).toStdString() << std::endl;
-    return getPathToMusicsFile() + track;
+    MusicRouter rout;
+    return rout.getPath() + track;
 
 }
 
 
 QString PackManager::createPathToParsedMusic(QString& track) {
 
-    return getPathToParsedMusic() + track;
+    ParsedMusicRouter rout;
+    return rout.getPath() + track;
 
 }
