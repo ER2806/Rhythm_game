@@ -14,6 +14,7 @@
 #include <utils.h>
 #include "../response_struct.h"
 #include "packmanager.h"
+#include "responseparser.h"
 
 class Client: public QWidget {
 Q_OBJECT
@@ -27,34 +28,26 @@ public:
     std::vector<std::string> getPlaylistFromServer(uint8_t& error_code);
 
 private slots:
-    void slotReadyRead   (                            );
+    void slotReadyRead   ();
     void slotError       (QAbstractSocket::SocketError);
-    void slotConnected   (                            );
+    void slotConnected   ();
     void closed () {std::cout << "closed" << std::endl;}
 
 private:
+
     std::unique_ptr<QTcpSocket> client;
     quint32 next_block_size;
-    bool is_error;
     quint8 err_code;
-    QString buff;
+    QByteArray tmp_data;
     bool is_executed_response = false;
-    std::vector<std::string> playlist;
-    std::vector<quint8> requestes;
+
     void sendGetTrack(std::string& track_name, quint8 command);
     void sendGetPlaylist();
     void sendGetParsedTrack(std::string& track_name);
     void responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& in);
     void sendStructToServer(ResponseStruct&);
 
-public:
-    void parseResponseGetErrorMsg(QDataStream& in);
-    void parseResponseGetMusic(QDataStream& in);
-    void parseResponseGetParsedMusic(QDataStream& in);
-    void parseResponseGetPlaylist(QDataStream& in);
-
 };
 
-#include "client_commands.h"
 
 #endif // CLIENT_H

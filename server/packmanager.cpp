@@ -32,7 +32,7 @@ void PackManager::packMusic(QDataStream &in, ResponseStruct &res) {
     QString path = createPathToMusic(track);
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)){
-
+        LOG(ERROR) << "Music not fount. Music finding here: " << path.toStdString();
         packErrorMsg(res, ErrorCodes::TRACK_NOT_FOUND);
 
         return;
@@ -50,6 +50,7 @@ void PackManager::packParsedMusic(QDataStream &in, ResponseStruct &res) {
 
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
+        LOG(ERROR) << "Parsed music not fount. Finding here: " << path.toStdString();
         packErrorMsg(res, ErrorCodes::PARSED_MUSIC_ERROR);
         return;
     }
@@ -66,7 +67,7 @@ void PackManager::packPlaylist(QDataStream &in, ResponseStruct &res) {
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
 
-        LOG(ERROR) << "Playlist is not found. Playlist finding here: "  << rout.getPath();
+        LOG(ERROR) << "Playlist is not found. Playlist finding here: "  << (rout.getPath()).toStdString();
         packErrorMsg(res, ErrorCodes::PLAYLIST_NOT_FOUND);
         return;
 

@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <functional>
 #include <sstream>
-//#include "client_commands.h"
 
 Client::Client(const std::string& host, int port, QWidget* parent): QWidget(parent), next_block_size(0)
 {
@@ -32,6 +31,7 @@ void Client::slotReadyRead() {
 
     if (!client->isOpen())
         std::cout << "client closed" << std::endl;
+
     for (;;) {
 
         if (!next_block_size) {
@@ -47,7 +47,7 @@ void Client::slotReadyRead() {
 
         next_block_size = 0;
         responseManager(client, in);
-        std::cout << "Read" << std::endl;
+
     }
 
 }
@@ -57,33 +57,17 @@ void Client::responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& i
 
     ResponseStruct res;
     in >> res;
-    std::cout << "RES = " << static_cast<int>(res.comand) << std::endl;
-    if (res.comand == GET_MUSIC)
-        std::cout << "GET_MUSIC" << std::endl;
 
-    switch (res.comand) {
-        case(ERROR):{
-            QDataStream tmp(res.data);
-            parseResponseGetErrorMsg(tmp);
-            break;
-        }
-        case(GET_MUSIC): {
-            QDataStream tmp(res.data);
-            parseResponseGetMusic(tmp);
-            break;
-        }
+    if (res.comand == ERROR) {
 
-        case(GET_PARSED_MUSIC): {
-            QDataStream tmp(res.data);
-            parseResponseGetParsedMusic(tmp);
-            break;
-        }
+        err_code = ResponseParser::getErrorMsg(res.data);
+        is_executed_response = true;
 
-        case(GET_PLAYLIST): {
-            QDataStream tmp(res.data);
-            parseResponseGetPlaylist(tmp);
-            break;
-        }
+    } else {
+
+        tmp_data = res.data;
+        is_executed_response = true;
+
     }
 
 }
@@ -158,19 +142,34 @@ std::string Client::getTrackFromServer(uint8_t& error_code, std::string& track_n
     }
 
     error_code = err_code;
-    return buff.toStdString();
+    std::string res;
+
+    if (error_code == ALL_OK) {
+        error_code = ResponseParser::getMusic(tmp_data, res);
+    }
+
+    return res;
 
 }
 
 std::string Client::getParsedTrackFromServer(uint8_t& error_code, std::string& track_name) {
 
     sendGetParsedTrack(track_name);
+
     while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
         delay(100);
     }
-    error_code = err_code;
 
-    return buff.toStdString();
+    error_code = err_code;
+    std::string res;
+
+    if (error_code == ALL_OK) {
+
+        error_code = ResponseParser::getParsedMusic(tmp_data, res);
+
+    }
+
+    return res;
 
 }
 
@@ -183,63 +182,12 @@ std::vector<std::string> Client::getPlaylistFromServer(uint8_t& error_code) {
     }
 
     error_code = err_code;
-    return playlist;
+    std::vector<std::string> res;
+    if (error_code == ALL_OK) {
 
-}
-
-void Client::parseResponseGetErrorMsg(QDataStream &in) {
-
-    in >> err_code;
-    is_executed_response = true;
-
-}
-
-void Client::parseResponseGetMusic(QDataStream &in) {
-    QByteArray music;
-    in >> music;
-    QString path = getPathToMusicsFile() + "new.wav";
-    QFile file2(path);
-
-     if (!file2.open(QIODevice::WriteOnly)){
-         err_code = ErrorCodes::FILE_NOT_CREAT;
-         return;
-     }
-
-     file2.write(music.data(), music.size());
-     file2.close();
-     buff = path;
-     is_executed_response = true;
-}
-
-
-void Client::parseResponseGetParsedMusic(QDataStream &in) {
-    QByteArray parsed_music;
-    in >> parsed_music;
-    QString path = getPathToParsedMusicsFile() + "parsed.txt";
-    QFile file(path);
-    if (!file.open(QIODevice::WriteOnly)) {
-        err_code = ErrorCodes::FILE_NOT_CREAT;
-        return;
+        error_code = ResponseParser::getPlaylist(tmp_data, res);
     }
 
-    file.write(parsed_music);
-    file.close();
+    return res;
 
-    buff = path;
-    is_executed_response = true;
-}
-
-void Client::parseResponseGetPlaylist(QDataStream &in) {
-    QByteArray playlist;
-    in >> playlist;
-    std::string res = playlist.toStdString();
-    std::replace(res.begin(), res.end(), '\n', ' ');
-    std::stringstream ss(res);
-    this->playlist.clear();
-    std::string tmp;
-    while(ss >> tmp){
-        this->playlist.push_back(tmp);
-    }
-
-    is_executed_response = true;
 }
