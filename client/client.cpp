@@ -90,7 +90,7 @@ void Client::slotError(QAbstractSocket::SocketError err){
                      QString(client->errorString())
                     );
     LOG(ERROR)  << strError.toStdString();
-    //std::cerr << strError.toStdString() << std::endl;
+    err_code = ERR4;
 
 }
 
@@ -149,9 +149,7 @@ std::string Client::getTrackFromServer(uint8_t& error_code, std::string& track_n
     LOG(INFO) << track_name;
     sendGetTrack(track_name);
 
-    while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
-        delay(100);
-    }
+    wait_response();
 
     error_code = err_code;
     std::string res;
@@ -170,9 +168,7 @@ std::string Client::getParsedTrackFromServer(uint8_t& error_code, std::string& t
     LOG(INFO) << track_name;
     sendGetParsedTrack(track_name);
 
-    while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
-        delay(100);
-    }
+    wait_response();
 
     error_code = err_code;
     std::string res;
@@ -192,11 +188,7 @@ std::vector<std::string> Client::getPlaylistFromServer(uint8_t& error_code) {
 
     sendGetPlaylist();
 
-    while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
-
-        delay(100);
-
-    }
+    wait_response();
 
     error_code = err_code;
     std::vector<std::string> res;
@@ -205,5 +197,15 @@ std::vector<std::string> Client::getPlaylistFromServer(uint8_t& error_code) {
     }
 
     return res;
+
+}
+
+void Client::wait_response() {
+
+    while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
+
+        delay(100);
+
+    }
 
 }

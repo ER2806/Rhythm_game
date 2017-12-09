@@ -42,7 +42,7 @@ private:
     quint8 err_code;
     QByteArray tmp_data;
     bool is_executed_response = false;
-
+    void wait_response();
     void sendGetTrack(std::string& track_name);
     void sendGetPlaylist();
     void sendGetParsedTrack(std::string& track_name);

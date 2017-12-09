@@ -11,3 +11,27 @@ INFO 13:35:05 (void Client::sendStructToServer(ResponseStruct &)): struct sended
 INFO 13:35:05 (std::string Client::getParsedTrackFromServer(uint8_t &, std::string &)): returned/Users/mac/Documents/Technopark/RhytmGame/MyServer/client/music/parsed.txt
 INFO 13:35:05 (void Client::sendGetPlaylist()): sended Get Playlist
 INFO 13:35:05 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
+INFO 13:56:13 (std::string Client::getTrackFromServer(uint8_t &, std::string &)): shape.wav
+INFO 13:56:13 (void Client::sendGetTrack(std::string &)): sended Get track: track_name: shape.wav
+INFO 13:56:13 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
+INFO 13:56:13 (void Client::slotConnected()): client connected to Server
+INFO 13:56:14 (std::string Client::getTrackFromServer(uint8_t &, std::string &)): returned/Users/mac/Documents/Technopark/RhytmGame/MyServer/client/music/new.vaw
+INFO 13:56:14 (std::string Client::getParsedTrackFromServer(uint8_t &, std::string &)): test
+INFO 13:56:14 (void Client::sendGetParsedTrack(std::string &)): sended Get Parsed track: parsed track name: test
+INFO 13:56:14 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
+INFO 13:56:14 (std::string Client::getParsedTrackFromServer(uint8_t &, std::string &)): returned/Users/mac/Documents/Technopark/RhytmGame/MyServer/client/music/parsed.txt
+INFO 13:56:14 (void Client::sendGetPlaylist()): sended Get Playlist
+INFO 13:56:14 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
+ERROR 13:56:19 (void Client::slotError(QAbstractSocket::SocketError)): Error: The remote host is closed.
+INFO 13:56:27 (std::string Client::getTrackFromServer(uint8_t &, std::string &)): shape.wav
+INFO 13:56:27 (void Client::sendGetTrack(std::string &)): sended Get track: track_name: shape.wav
+INFO 13:56:27 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
+INFO 13:58:22 (std::string Client::getTrackFromServer(uint8_t &, std::string &)): shape.wav
+INFO 13:58:22 (void Client::sendGetTrack(std::string &)): sended Get track: track_name: shape.wav
+INFO 13:58:22 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
+INFO 13:58:38 (std::string Client::getTrackFromServer(uint8_t &, std::string &)): shape.wav
+INFO 13:58:38 (void Client::sendGetTrack(std::string &)): sended Get track: track_name: shape.wav
+INFO 13:58:38 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
+INFO 13:58:56 (std::string Client::getTrackFromServer(uint8_t &, std::string &)): shape.wav
+INFO 13:58:56 (void Client::sendGetTrack(std::string &)): sended Get track: track_name: shape.wav
+INFO 13:58:56 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
