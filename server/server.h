@@ -2,15 +2,16 @@
 #define SERVER_H
 
 #include <QtNetwork>
-#include <QWidget>
-#include <iostream>
-#include <string>
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QDataStream>
+#include <QVector>
+#include <iostream>
+#include <string>
 #include "../response_struct.h"
 #include "baseserver.h"
+#include "packmanager.h"
 
 class Server: public QObject, public BaseServer
 {

@@ -1,8 +1,4 @@
 #include "server.h"
-#include <QTextStream>
-#include <QVector>
-#include "packmanager.h"
-#include "logging.h"
 
 Server::Server(int port, QObject* parent/* = 0*/) : QObject(parent), BaseServer(port), next_block_size(0),
                                                     tcp_server(std::make_unique<QTcpServer>(nullptr)) {}

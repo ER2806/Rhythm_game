@@ -1,29 +1,22 @@
 #ifndef CLIENT_H
 #define CLIENT_H
+
 #include <QtNetwork>
-#include <QWidget>
-#include <iostream>
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QDataStream>
 #include <vector>
-#include <QVector>
-#include <string>
-#include <QString>
-#include "utils/enumcommands.h"
-#include "utils/networkutils.h"
 #include "utils/delay.h"
 #include "../response_struct.h"
 #include "packmanager.h"
 #include "responseparser.h"
 
-class Client: public QWidget {
+class Client: public QObject {
 Q_OBJECT
 
 public:
 
-    Client(const std::string& host, int port, QWidget* parent = 0);
+    Client(const std::string& host, int port, QObject* parent = 0);
     ~Client();
     std::string getTrackFromServer(uint8_t& error_code, std::string& track_name); // qstring or music_id
     std::string getParsedTrackFromServer(uint8_t& error_code, std::string& track_name);
@@ -33,7 +26,6 @@ private slots:
     void slotReadyRead   ();
     void slotError       (QAbstractSocket::SocketError);
     void slotConnected   ();
-    void closed () {std::cout << "closed" << std::endl;}
 
 private:
 

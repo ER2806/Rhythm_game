@@ -119,7 +119,7 @@ QString PackManager::getTrackNameFromStream(QDataStream &stream) {
 QString PackManager::createPathToMusic(QString& track){
 
     MusicRouter rout;
-    return rout.getPath() + track;
+    return rout.makePath(track);
 
 }
 
@@ -127,6 +127,6 @@ QString PackManager::createPathToMusic(QString& track){
 QString PackManager::createPathToParsedMusic(QString& track) {
 
     ParsedMusicRouter rout;
-    return rout.getPath() + track;
+    return rout.makePath(track);
 
 }

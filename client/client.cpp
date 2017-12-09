@@ -1,11 +1,7 @@
 #include "client.h"
-#include <string>
-#include <algorithm>
-#include <functional>
-#include <sstream>
 #include "logging.h"
 
-Client::Client(const std::string& host, int port, QWidget* parent): QWidget(parent), next_block_size(0)
+Client::Client(const std::string& host, int port, QObject* parent): QObject(parent), next_block_size(0)
 {
     this->is_executed_response = false;
 
@@ -14,7 +10,7 @@ Client::Client(const std::string& host, int port, QWidget* parent): QWidget(pare
     connect(client.get(), SIGNAL(connected()), SLOT(slotConnected()));
     connect(client.get(), SIGNAL(readyRead()), SLOT(slotReadyRead()));
     connect(client.get(), SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(slotError(QAbstractSocket::SocketError)));
+                                     this, SLOT(slotError(QAbstractSocket::SocketError)));
 
 }
 
@@ -30,7 +26,7 @@ void Client::slotReadyRead() {
     QDataStream in(client.get());
     in.setVersion(QDataStream::Qt_5_7);
 
-    if (!client->isOpen()) {
+    if (!client) {
         LOG(INFO) << "client closed";
         return;
     }

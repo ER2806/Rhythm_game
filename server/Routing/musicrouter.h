@@ -14,6 +14,12 @@ public:
 
     }
 
+    QString makePath(QString& music_name) {
+
+        return getPath() + music_name;
+
+    }
+
 };
 
 #endif // MUSICROUTER_H

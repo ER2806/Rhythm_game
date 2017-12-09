@@ -13,6 +13,13 @@ public:
        return QString ("/Users/mac/Documents/Technopark/RhytmGame/MyServer/music/");
 
     }
+
+    QString makePath(QString& music_name) {
+
+        return getPath() + music_name;
+
+    }
+
 };
 
 

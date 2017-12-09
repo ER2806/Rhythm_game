@@ -12,21 +12,21 @@ public:
     static void setUpSettings() {
         el::Loggers::reconfigureAllLoggers(el::ConfigurationType::Filename, "/Users/mac/Documents/Technopark/RhytmGame/Rhythm_game/client/logs/mylogs.log");
         el::Loggers::reconfigureAllLoggers(el::ConfigurationType::Format, "%level %datetime{%H:%m:%s} (%func): %msg");
-        /* Выключаем выдачу на экран  */
+        /* Выключаем выдачу на стандартный поток  */
         el::Loggers::reconfigureAllLoggers(el::ConfigurationType::ToStandardOutput, "false");
         /* Включаем флаг цветной печати */
         el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
         /* Ставим флаг для переключения журналов по размеру файла */
         el::Loggers::addFlag(el::LoggingFlag::StrictLogFileSizeCheck);
         /* Ставим проговое значение на размер файла в 1MB*/
-        el::Loggers::reconfigureAllLoggers(el::ConfigurationType::MaxLogFileSize, "1000000");
+        el::Loggers::reconfigureAllLoggers(el::ConfigurationType::MaxLogFileSize, "8388608");
         /* Передаем callback на переключение файлов */
         el::Helpers::installPreRollOutCallback(LogsRollout);
     }
 
     static void LogsRollout(const char* fname, size_t fsize)
     {
-        /* Допишем к имени файла текущий номер последовательности (или время) */
+        /* Допишем к имени файла текущую дату*/
         std::string fileName = fname;
         size_t position = fileName.find(".");
         std::string extractName = (std::string::npos == position)? fileName : fileName.substr(0, position);

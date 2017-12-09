@@ -9,8 +9,7 @@ int main(int argc, char *argv[])
 {
 
     QApplication a(argc, argv);
-    Logging log;
-    log.setUpSettings();
+    Logging::setUpSettings();
     Server serv(getPort());
     serv.run();
     return a.exec();

@@ -5,7 +5,6 @@
 #include <QFile>
 #include <string>
 #include <sstream>
-//#include "utils.h"
 #include "Routing/musicrouter.h"
 #include "Routing/parsedmusicrouter.h"
 #include "utils/enumcommands.h"
@@ -26,6 +25,7 @@ private:
 
     static QString createPathToMusic(QString&);
     static QString createPathToParsedMusic(QString&);
+    static quint8 createFileFromByteArray(QByteArray& data, QString& path);
 };
 
 

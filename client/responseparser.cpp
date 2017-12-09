@@ -12,21 +12,11 @@ quint8 ResponseParser::getErrorMsg(QByteArray &in) {
 quint8 ResponseParser::getMusic(QByteArray &in, std::string &res) {
 
     QByteArray music = in;
-    QString track_name("new.vaw");
+    QString track_name("new.vaw"); // На стороне клиента запрошенная музыка будет сохранена под именем  new.vaw
     QString path = createPathToMusic(track_name);
-    QFile file2(path);
 
-     if (!file2.open(QIODevice::WriteOnly)){
-
-         return ErrorCodes::FILE_NOT_CREAT;
-
-     }
-
-     file2.write(music.data(), music.size());
-     file2.close();
-     res = path.toStdString();
-     //is_executed_response = true;
-     return ALL_OK;
+    res = path.toStdString();
+    return createFileFromByteArray(music, path);
 
 }
 
@@ -35,16 +25,10 @@ quint8 ResponseParser::getParsedMusic(QByteArray &in, std::string &res) {
     QByteArray parsed_music = in;
     QString file_name("parsed.txt");
     QString path = createPathToParsedMusic(file_name);
-    QFile file(path);
 
-    if (!file.open(QIODevice::WriteOnly)) {
-        return ErrorCodes::FILE_NOT_CREAT;
-    }
-
-    file.write(parsed_music);
-    file.close();
     res = path.toStdString();
-    return ALL_OK;
+
+    return createFileFromByteArray(parsed_music, path);
 
 }
 
@@ -78,5 +62,22 @@ QString ResponseParser::createPathToParsedMusic(QString& track) {
 
     ParsedMusicRouter rout;
     return rout.getPath() + track;
+
+}
+
+quint8 ResponseParser::createFileFromByteArray(QByteArray &data, QString &path) {
+
+    QFile file(path);
+
+    if (!file.open(QIODevice::WriteOnly))
+        return ErrorCodes::FILE_NOT_CREAT;
+
+    // Проверяем записались ли все данные
+    quint8 err_code = (file.write(data, data.size()) == data.size()) ?
+                                                    ErrorCodes::ALL_OK : ErrorCodes::FILE_NOT_CREAT;
+
+    file.close();
+
+    return err_code;
 
 }
