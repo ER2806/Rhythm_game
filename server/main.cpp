@@ -11,7 +11,13 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     Logging::setUpSettings();
     Server serv(getPort());
-    serv.run();
+
+    try {
+        serv.run();
+    } catch(std::logic_error& ex) {
+        LOG(ERROR) << ex.what();
+    }
+
     return a.exec();
 
 }
