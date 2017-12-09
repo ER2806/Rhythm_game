@@ -16,6 +16,7 @@ public:
     static ResponseStruct packPlaylist();
 
 private:
+
     static void addCommandToResponseStruct(ResponseStruct& str, unsigned comm);
     static void addStringToByteArray(QByteArray& arr, std::string& str);
 };

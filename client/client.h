@@ -43,7 +43,7 @@ private:
     QByteArray tmp_data;
     bool is_executed_response = false;
 
-    void sendGetTrack(std::string& track_name, quint8 command);
+    void sendGetTrack(std::string& track_name);
     void sendGetPlaylist();
     void sendGetParsedTrack(std::string& track_name);
     void responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& in);

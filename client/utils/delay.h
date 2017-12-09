@@ -5,4 +5,5 @@
 #include <QEventLoop>
 
 void delay(int msec_to_wait);
+
 #endif // DELAY_H

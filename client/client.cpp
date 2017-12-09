@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <functional>
 #include <sstream>
-
+#include "logging.h"
 
 Client::Client(const std::string& host, int port, QWidget* parent): QWidget(parent), next_block_size(0)
 {
@@ -30,8 +30,11 @@ void Client::slotReadyRead() {
     QDataStream in(client.get());
     in.setVersion(QDataStream::Qt_5_7);
 
-    if (!client->isOpen())
-        std::cout << "client closed" << std::endl;
+    if (!client->isOpen()) {
+        LOG(INFO) << "client closed";
+        return;
+    }
+
 
     for (;;) {
 
@@ -62,6 +65,8 @@ void Client::responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& i
     if (res.comand == ERROR) {
 
         err_code = ResponseParser::getErrorMsg(res.data);
+        LOG(ERROR) << "from server returned Error code: " << err_code;
+
         is_executed_response = true;
 
     } else {
@@ -84,20 +89,22 @@ void Client::slotError(QAbstractSocket::SocketError err){
                      "The connection was refused." :
                      QString(client->errorString())
                     );
-    std::cerr << strError.toStdString() << std::endl;
+    LOG(ERROR)  << strError.toStdString();
+    //std::cerr << strError.toStdString() << std::endl;
 
 }
 
 
 void Client::slotConnected() {
 
-    std::cout << "Client connected" << std::endl;
+    LOG(INFO) << "client connected to Server";
 
 }
 
 
-void Client::sendGetTrack(std::string& track_name, quint8 command) {
+void Client::sendGetTrack(std::string& track_name) {
 
+    LOG(INFO) << "sended Get track: track_name: " << track_name;
     is_executed_response = false;
     err_code = ErrorCodes::ALL_OK;
     ResponseStruct str = PackManager::packTrackName(track_name);
@@ -107,6 +114,7 @@ void Client::sendGetTrack(std::string& track_name, quint8 command) {
 
 void Client::sendGetParsedTrack(std::string& track_name) {
 
+    LOG(INFO) << "sended Get Parsed track: parsed track name: " << track_name;
     is_executed_response = false;
     err_code = ErrorCodes::ALL_OK;
     ResponseStruct str = PackManager::packParsedTrackName(track_name);
@@ -116,6 +124,7 @@ void Client::sendGetParsedTrack(std::string& track_name) {
 
 void Client::sendGetPlaylist() {
 
+    LOG(INFO) << "sended Get Playlist";
     is_executed_response = false;
     err_code = ErrorCodes::ALL_OK;
     ResponseStruct str = PackManager::packPlaylist();
@@ -126,6 +135,7 @@ void Client::sendGetPlaylist() {
 
 void Client::sendStructToServer(ResponseStruct& str) {
 
+    LOG(INFO) << "struct sended to server";
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out << quint16(sizeof(str.comand) + str.data.size());
@@ -136,7 +146,8 @@ void Client::sendStructToServer(ResponseStruct& str) {
 
 std::string Client::getTrackFromServer(uint8_t& error_code, std::string& track_name) {
 
-    sendGetTrack(track_name, Commands::GET_MUSIC);
+    LOG(INFO) << track_name;
+    sendGetTrack(track_name);
 
     while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
         delay(100);
@@ -149,12 +160,14 @@ std::string Client::getTrackFromServer(uint8_t& error_code, std::string& track_n
         error_code = ResponseParser::getMusic(tmp_data, res);
     }
 
+    LOG(INFO) << "returned" << res;
     return res;
 
 }
 
 std::string Client::getParsedTrackFromServer(uint8_t& error_code, std::string& track_name) {
 
+    LOG(INFO) << track_name;
     sendGetParsedTrack(track_name);
 
     while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
@@ -170,6 +183,7 @@ std::string Client::getParsedTrackFromServer(uint8_t& error_code, std::string& t
 
     }
 
+    LOG(INFO) << "returned" << res;
     return res;
 
 }
@@ -179,13 +193,14 @@ std::vector<std::string> Client::getPlaylistFromServer(uint8_t& error_code) {
     sendGetPlaylist();
 
     while(!is_executed_response && err_code == ErrorCodes::ALL_OK){
+
         delay(100);
+
     }
 
     error_code = err_code;
     std::vector<std::string> res;
     if (error_code == ALL_OK) {
-
         error_code = ResponseParser::getPlaylist(tmp_data, res);
     }
 

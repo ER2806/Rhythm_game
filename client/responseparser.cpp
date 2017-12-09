@@ -69,7 +69,7 @@ QString ResponseParser::createPathToMusic(QString& track){
 
     MusicRouter rout;
     return rout.getPath() + track;
-//    return track;
+
 
 }
 

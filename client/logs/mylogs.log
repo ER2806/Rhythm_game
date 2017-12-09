@@ -1,0 +1,13 @@
+INFO 12:56:58 (void Client::slotConnected()): client connected to Server
+INFO 12:59:10 (void Client::slotConnected()): client connected to Server
+INFO 13:35:05 (std::string Client::getTrackFromServer(uint8_t &, std::string &)): shape.wav
+INFO 13:35:05 (void Client::sendGetTrack(std::string &)): sended Get track: track_name: shape.wav
+INFO 13:35:05 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
+INFO 13:35:05 (void Client::slotConnected()): client connected to Server
+INFO 13:35:05 (std::string Client::getTrackFromServer(uint8_t &, std::string &)): returned/Users/mac/Documents/Technopark/RhytmGame/MyServer/client/music/new.vaw
+INFO 13:35:05 (std::string Client::getParsedTrackFromServer(uint8_t &, std::string &)): test
+INFO 13:35:05 (void Client::sendGetParsedTrack(std::string &)): sended Get Parsed track: parsed track name: test
+INFO 13:35:05 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server
+INFO 13:35:05 (std::string Client::getParsedTrackFromServer(uint8_t &, std::string &)): returned/Users/mac/Documents/Technopark/RhytmGame/MyServer/client/music/parsed.txt
+INFO 13:35:05 (void Client::sendGetPlaylist()): sended Get Playlist
+INFO 13:35:05 (void Client::sendStructToServer(ResponseStruct &)): struct sended to server

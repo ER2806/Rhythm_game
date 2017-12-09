@@ -1,12 +1,15 @@
 #include <QApplication>
 #include "client.h"
 
-#include "libs/easylogging++.h"
+#include "logging.h"
+
 INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    Logging::setUpSettings();
     Client client(getIpAddr(), getPort());
     std::string name("shape.wav");
     std::string name2("test");

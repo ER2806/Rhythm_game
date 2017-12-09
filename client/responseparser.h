@@ -22,7 +22,8 @@ public:
     static quint8 getMusic(QByteArray& in, std::string&);
     static quint8 getParsedMusic(QByteArray& in, std::string&);
 
-/*private:*/
+private:
+
     static QString createPathToMusic(QString&);
     static QString createPathToParsedMusic(QString&);
 };
