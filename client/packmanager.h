@@ -2,7 +2,8 @@
 #define PACKMANAGER_H
 
 #include "../response_struct.h"
-#include "utils.h"
+//#include "utils.h"
+#include "utils/enumcommands.h"
 
 class PackManager
 {

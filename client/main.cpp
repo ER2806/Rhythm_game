@@ -1,6 +1,8 @@
 #include <QApplication>
 #include "client.h"
 
+#include "libs/easylogging++.h"
+INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char *argv[])
 {

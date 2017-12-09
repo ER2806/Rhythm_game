@@ -4,6 +4,7 @@
 #include <functional>
 #include <sstream>
 
+
 Client::Client(const std::string& host, int port, QWidget* parent): QWidget(parent), next_block_size(0)
 {
     this->is_executed_response = false;

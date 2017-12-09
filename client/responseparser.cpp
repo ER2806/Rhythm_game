@@ -12,12 +12,14 @@ quint8 ResponseParser::getErrorMsg(QByteArray &in) {
 quint8 ResponseParser::getMusic(QByteArray &in, std::string &res) {
 
     QByteArray music = in;
-
-    QString path = getPathToMusicsFile() + "new.wav";
+    QString track_name("new.vaw");
+    QString path = createPathToMusic(track_name);
     QFile file2(path);
 
      if (!file2.open(QIODevice::WriteOnly)){
+
          return ErrorCodes::FILE_NOT_CREAT;
+
      }
 
      file2.write(music.data(), music.size());
@@ -31,7 +33,8 @@ quint8 ResponseParser::getMusic(QByteArray &in, std::string &res) {
 quint8 ResponseParser::getParsedMusic(QByteArray &in, std::string &res) {
 
     QByteArray parsed_music = in;
-    QString path = getPathToParsedMusicsFile() + "parsed.txt";
+    QString file_name("parsed.txt");
+    QString path = createPathToParsedMusic(file_name);
     QFile file(path);
 
     if (!file.open(QIODevice::WriteOnly)) {
@@ -58,5 +61,22 @@ quint8 ResponseParser::getPlaylist(QByteArray &in, std::vector<std::string> &res
     }
 
     return ALL_OK;
+
+}
+
+
+QString ResponseParser::createPathToMusic(QString& track){
+
+    MusicRouter rout;
+    return rout.getPath() + track;
+//    return track;
+
+}
+
+
+QString ResponseParser::createPathToParsedMusic(QString& track) {
+
+    ParsedMusicRouter rout;
+    return rout.getPath() + track;
 
 }

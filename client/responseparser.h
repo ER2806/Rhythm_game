@@ -5,7 +5,11 @@
 #include <QFile>
 #include <string>
 #include <sstream>
-#include "utils.h"
+//#include "utils.h"
+#include "Routing/musicrouter.h"
+#include "Routing/parsedmusicrouter.h"
+#include "utils/enumcommands.h"
+#include <QString>
 
 class ResponseParser
 {
@@ -18,6 +22,9 @@ public:
     static quint8 getMusic(QByteArray& in, std::string&);
     static quint8 getParsedMusic(QByteArray& in, std::string&);
 
+/*private:*/
+    static QString createPathToMusic(QString&);
+    static QString createPathToParsedMusic(QString&);
 };
 
 

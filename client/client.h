@@ -11,7 +11,9 @@
 #include <QVector>
 #include <string>
 #include <QString>
-#include <utils.h>
+#include "utils/enumcommands.h"
+#include "utils/networkutils.h"
+#include "utils/delay.h"
 #include "../response_struct.h"
 #include "packmanager.h"
 #include "responseparser.h"
