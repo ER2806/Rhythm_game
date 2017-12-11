@@ -1,2 +1,0 @@
-g++ -c main.cpp -I/home/daria/Downloads/SFML-master/include && g++ main.o -L/home/daria/Downloads/SFML-master/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -o grpr.out
- 
