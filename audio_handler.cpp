@@ -6,7 +6,10 @@
 #include "physical_response_textfile.h"
 #include "filter_interface.h"
 #include "basic_filter.h"
+#include "bass.h"
 #include <math.h>
+#include "audio_to_fft_bass.h"
+#include "audio_to_fft.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -18,7 +21,6 @@
 #include "easylogging++.h"
 
 INITIALIZE_EASYLOGGINGPP
-
 
 #ifdef DEBUG
 void printArray(const std::array<std::vector<int>, BANDS>& array){
@@ -32,16 +34,40 @@ void printArray(const std::array<std::vector<int>, BANDS>& array){
     }
 }
 #endif
+class AudioHandler::Private {
+public:
+    Private(const std::string& filename);
+    ~Private();
+    void buildDotsFromFreq();
+    int updateSpectrumInTime();
+    //std::vector<std::array<int, BANDS>> dotsArray;
 
-AudioHandler::AudioHandler(const std::string& filename) : sourceFilename(filename){
+    std::array<std::vector<int>, BANDS> dotsArray;
+    std::array<std::vector<int>, BANDS> freqArray;
+    std::string sourceFilename;
+    std::string dotsFilename;
+    DWORD channel;
+    AudioToFFT* musicWorker;
+};
+
+AudioHandler::Private::Private(const std::string& filename) : sourceFilename(filename){
     musicWorker = new AudioToFFTBass(filename);
 }
 
+AudioHandler::AudioHandler(const std::string& filename){
+    private_group = new Private(filename);
+}
+
 AudioHandler::~AudioHandler(){
+    delete private_group;
+}
+
+AudioHandler::Private::~Private(){
     delete musicWorker;
 }
 
-int AudioHandler::updateSpectrumInTime(){
+
+int AudioHandler::Private::updateSpectrumInTime(){
     std::array<int, BANDS> temp;
     std::vector<float> fastFT = musicWorker->getFFT(2048);
     int b0_coef = 0;
@@ -67,38 +93,38 @@ int AudioHandler::updateSpectrumInTime(){
 }
 
 void AudioHandler::parse(){
-    musicWorker->startChannelPlay();
-    double musicLength = musicWorker->getLengthTimeInMsec();
+    private_group->musicWorker->startChannelPlay();
+    double musicLength = private_group->musicWorker->getLengthTimeInMsec();
 #ifdef DEBUG
     std::cout << musicLength << std::endl;
 #endif
     double lastUpdateTime = 0 - TDIFF - TDIFF/100;
     for(double playingTime = 0; playingTime < musicLength;
-        playingTime = musicWorker->getPlayingTimeInMsec()){
+        playingTime = private_group->musicWorker->getPlayingTimeInMsec()){
         if ((playingTime - lastUpdateTime) >= TDIFF){
             std::cout << playingTime << std::endl;
             lastUpdateTime = playingTime;
-            updateSpectrumInTime();
+            private_group->updateSpectrumInTime();
         }
     }
     //printArray(freqArray);
-    buildDotsFromFreq();
+    private_group->buildDotsFromFreq();
     //printArray(dotsArray);
-    FilterInterface* filter = new BasicFilter(dotsArray);
-    dotsArray = filter->runFilters();
+    FilterInterface* filter = new BasicFilter(private_group->dotsArray);
+    private_group->dotsArray = filter->runFilters();
     delete filter;
     //runFilters();
     //printArray(dotsArray);
 
 
-    PhysicalResponse* physResp = new PhysicalResponseTextfile(sourceFilename);
-    MakeResponse responseHandler(dotsArray);
+    PhysicalResponse* physResp = new PhysicalResponseTextfile(private_group->sourceFilename);
+    MakeResponse responseHandler(private_group->dotsArray);
     responseHandler.response(physResp);
 
     delete physResp;
 }
 
-void AudioHandler::buildDotsFromFreq(){
+void AudioHandler::Private::buildDotsFromFreq(){
     //transform frq to dots where frq amp doubled
     dotsArray = freqArray;
     int lastmin = SPECHEIGHT;
