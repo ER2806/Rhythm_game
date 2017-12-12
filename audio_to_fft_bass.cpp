@@ -1,14 +1,18 @@
 #include "audio_to_fft_bass.h"
+#include "easylogging++.h"
+
+//INITIALIZE_EASYLOGGINGPP
+
 
 AudioToFFTBass::AudioToFFTBass(const std::string& filename) : audioFilename(filename){
     if (HIWORD(BASS_GetVersion()) != BASSVERSION) {
-        //std::cout << "An incorrect version of BASS was loaded" << std::endl;
+        LOG(ERROR) << "Bass version is incorrect";
         // throw
     }
 
     // initialize BASS
     if (!BASS_Init(-1, 44100, 0, NULL, NULL)) {
-        //std::cout << "Can't initialize device" << std::endl;
+        LOG(ERROR) << "Cant't initialize device";
         //throw
     }
 }
@@ -49,7 +53,7 @@ void AudioToFFTBass::startChannelPlay(){
     //channel = BASS_MusicLoad(FALSE, "haddawa.wav", 0, 0, BASS_MUSIC_RAMP, 1);
     //std::cout << sourceFilename << " " << channel << " " << BASS_ErrorGetCode() << std::endl;
     if (!BASS_ChannelPlay(audioChannel, FALSE)){
-        //std::cout << "FAAAAAAAAAALSE" << std::endl;
+        LOG(ERROR) << "Can't start playing";
         BASS_Free();
         //throw
     }

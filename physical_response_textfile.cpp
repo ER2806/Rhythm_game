@@ -5,7 +5,7 @@ std::string makeDotsFilename(std::string sourceFilename){
     std::string dotsFilename = sourceFilename;
     int pointInd = dotsFilename.find_last_of('.');
     //if incorrect -> throw
-    dotsFilename.erase(pointInd, pointInd + 3);
+    dotsFilename.erase(pointInd, pointInd + 3); // 3 letters crutch for extension
     dotsFilename = dotsFilename.append(".txt");
     return dotsFilename;
 }

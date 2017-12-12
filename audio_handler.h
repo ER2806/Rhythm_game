@@ -17,12 +17,9 @@ public:
     ~AudioHandler();
     void parse();
 private:
-    void writeToFile();
     void buildDotsFromFreq();
-    void runFilters();
-    void startChannelPlay();
-    void makeDotsFilename();
     int updateSpectrumInTime();
+
     //std::vector<std::array<int, BANDS>> dotsArray;
     std::array<std::vector<int>, BANDS> dotsArray;
     std::array<std::vector<int>, BANDS> freqArray;

@@ -15,6 +15,11 @@
 #include <vector>
 #include <array>
 
+#include "easylogging++.h"
+
+INITIALIZE_EASYLOGGINGPP
+
+
 #ifdef DEBUG
 void printArray(const std::array<std::vector<int>, BANDS>& array){
     //std::cout << "SIZE " << array[0].size() << std::endl;
@@ -94,6 +99,7 @@ void AudioHandler::parse(){
 }
 
 void AudioHandler::buildDotsFromFreq(){
+    //transform frq to dots where frq amp doubled
     dotsArray = freqArray;
     int lastmin = SPECHEIGHT;
     for(int band = 0; band < BANDS; ++band){
@@ -112,77 +118,4 @@ void AudioHandler::buildDotsFromFreq(){
             }
         }
     }
-}
-
-void AudioHandler::runFilters(){
-    for(int band = 0; band < BANDS; ++band){
-        for(int i = 0; i < dotsArray[band].size() - 2; i += 2){
-            if(dotsArray[band][i] == dotsArray[band][i+1] && dotsArray[band][i] == 1){
-                dotsArray[band][i+1] = 0;
-            }
-        }
-        for(int i = 1; i < dotsArray[band].size() - 2; i += 2){
-            if(dotsArray[band][i] == dotsArray[band][i+1] && dotsArray[band][i] == 1){
-                dotsArray[band][i+1] = 0;
-            }
-        }
-        for(int i = 0; i < dotsArray[band].size() - 4; ++i){
-            if(dotsArray[band][i] + dotsArray[band][i+1] + dotsArray[band][i+2] + dotsArray[band][i+3] > 1) {
-                if(dotsArray[band][i]){
-                    dotsArray[band][i+1] = 0;
-                    dotsArray[band][i+2] = 0;
-                    dotsArray[band][i+3] = 0;
-                }
-                else if(dotsArray[band][i+1]){
-                    dotsArray[band][i] = 0;
-                    dotsArray[band][i+2] = 0;
-                    dotsArray[band][i+3] = 0;
-                }
-                else if(dotsArray[band][i+2]){ dotsArray[band][i+1] = 0;
-                    dotsArray[band][i] = 0;
-                    dotsArray[band][i+3] = 0;
-                }
-                else{
-                    dotsArray[band][i+1] = 0;
-                    dotsArray[band][i+2] = 0;
-                    dotsArray[band][i] = 0;
-                }
-            }
-        }
-    }
-    //printArray(dotsArray);
-}
-
-
-void AudioHandler::makeDotsFilename(){
-    dotsFilename = sourceFilename;
-    int pointInd = dotsFilename.find_last_of('.');
-    //if incorrect -> throw
-    dotsFilename.erase(pointInd, pointInd + 3);
-    dotsFilename = dotsFilename.append(".txt");
-}
-
-void AudioHandler::writeToFile(){
-    //file signature (time band) ... (time band)
-    std::vector<std::pair<int, int>> answer;
-    for(int i = 0; i < dotsArray[0].size(); ++i){
-        for(int band = 0; band < BANDS; ++band){
-            if(dotsArray[band][i]){
-                auto temp = std::make_pair((i+1)*TDIFF, band);
-                answer.push_back(temp);
-            }
-        }
-    }
-
-    makeDotsFilename();
-    std::ofstream offile;
-    offile.open(dotsFilename.c_str(), std::ofstream::out);
-    //check file open
-    for(int i = 0; i < answer.size(); ++i){
-        offile << answer[i].first << " " << answer[i].second << std::endl;
-#ifdef DEBUG
-        std::cout << answer[i].first << " " << answer[i].second << std::endl;
-#endif
-    }
-    //std::cout << dotsFilename << std::endl;
 }
