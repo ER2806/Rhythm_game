@@ -1,20 +1,36 @@
-/* for merging
+#define NON_MERGING
+
+#ifndef NON_MERGING
 #include <QCoreApplication>
 #include <QApplication>
 #include "utils.h"
 #include "client.h"
-*/
-#include "graph.hpp"
+#endif
 
-#define WHITE (sf::Color(255, 255, 255, 250))
-#define BLUE (sf::Color(0,174,255,250))
+#include "graph.hpp"
+#include "easylogging++.h"
+INITIALIZE_EASYLOGGINGPP
+
 #define WIDTH 600
 #define HEIGHT 600
 
-void startGame() // cоздание клиента
-{
-    // Client NewClient();
-}
+const int FONTSIZE = 24;
+const int SCORE_VERTICAL_PADDING = 10;
+const int HIT_SCORE_HORIZONTAL_PADDING = 10;
+const int MISS_SCORE_HORIZONTAL_PADDING = 550;
+const int BALL_RADIUS = 30;
+const int CROSS_ROAD_TIME = 1500;
+const int LINE_THICKNESS = 4;
+const int DISTANCE_BETWEEN_LINES = 50;
+const int HORIZONTAL_LINE_Y_POSITION = 480;
+const int HORIZONTAL_LINE_LENGTH = 200;
+const int VERTICAL_LINE_Y_INDENT = 50;
+const int ACTIVE_ZONE_TOP = 450;
+const int ACTIVE_ZONE_BOTTOM = 550;
+const sf::Color WHITE = (sf::Color(255, 255, 255, 250));
+const sf::Color BLUE = (sf::Color(0,174,255,250));
+
+
 
 std::string getTrack() //получение адеса аудио
 {
@@ -42,13 +58,13 @@ void createLines(std::vector<sf::RectangleShape>& RectanglesList)
 {
     for(int i = 0; i < 3; i++)
     {
-        sf::RectangleShape line(sf::Vector2f(HEIGHT-100, 4));
-        line.setPosition(WIDTH/2 + 50*(i-1),50);
+        sf::RectangleShape line(sf::Vector2f(HEIGHT-VERTICAL_LINE_Y_INDENT*2, LINE_THICKNESS));
+        line.setPosition(WIDTH/2 + DISTANCE_BETWEEN_LINES*(i-1),DISTANCE_BETWEEN_LINES);
         line.rotate(90);
         RectanglesList.push_back(line);
     }
-    sf::RectangleShape lineh(sf::Vector2f(200, 4));
-    lineh.setPosition(WIDTH/2-100,480);
+    sf::RectangleShape lineh(sf::Vector2f(HORIZONTAL_LINE_LENGTH, LINE_THICKNESS));
+    lineh.setPosition(WIDTH/2-HORIZONTAL_LINE_LENGTH/2,HORIZONTAL_LINE_Y_POSITION);
     RectanglesList.push_back(lineh);
 }
 
@@ -59,16 +75,17 @@ std::vector<sf::Sprite> createNodes(std::vector<PointInTime>& PointList, sf::Tex
     {
         sf::Sprite sprite;
         sprite.setTexture(texture);
-        sprite.setTextureRect(sf::IntRect(0, 0, 60, 60));
+        sprite.setTextureRect(sf::IntRect(0, 0, BALL_RADIUS*2, BALL_RADIUS*2));
         sprite.setColor(WHITE);
-        sprite.setPosition(WIDTH/2-100 + 50*PointList[i].line - 30, 20);
-        if(PointList[i].time < 1500)
+        sprite.setPosition(WIDTH/2 - DISTANCE_BETWEEN_LINES*2 + DISTANCE_BETWEEN_LINES * PointList[i].line - BALL_RADIUS,
+                           VERTICAL_LINE_Y_INDENT-BALL_RADIUS);
+        if(PointList[i].time < CROSS_ROAD_TIME)
         {
-            sprite.move(0,((double)(1500-PointList[i].time))*480/1500);
+            sprite.move(0,((double)(CROSS_ROAD_TIME-PointList[i].time))*HORIZONTAL_LINE_Y_POSITION/CROSS_ROAD_TIME);
             PointList[i].time = 0;
         }
         else
-            PointList[i].time -= 1500;
+            PointList[i].time -= CROSS_ROAD_TIME;
         SpriteList.push_back(sprite);
     }
     return SpriteList;
@@ -80,12 +97,12 @@ void createText(sf::Text& hit, sf::Text& miss, sf::Font& font)
     miss.setString("0");
     hit.setFont(font);
     miss.setFont(font);
-    hit.setCharacterSize(24);
-    miss.setCharacterSize(24);
+    hit.setCharacterSize(FONTSIZE);
+    miss.setCharacterSize(FONTSIZE);
     hit.setFillColor(WHITE);
     miss.setFillColor(WHITE);
-    hit.setPosition(10,10);
-    miss.setPosition(550,10);
+    hit.setPosition(HIT_SCORE_HORIZONTAL_PADDING, SCORE_VERTICAL_PADDING);
+    miss.setPosition(MISS_SCORE_HORIZONTAL_PADDING, SCORE_VERTICAL_PADDING);
     return;
 }
 
@@ -95,12 +112,13 @@ std::vector<PointInTime> getPoints()
     std::ifstream in;
  
     in.open(getParsedTrack());
-    int64_t ms;
+    size_t ms;
     int num;
+    LOG(INFO) << "point array (line; time):";
     while(in >> ms)
     {
         in >> num;
-        std::cout << num << " " << ms << std::endl;
+        LOG(INFO) << num << " " << ms;
         PointList.push_back(PointInTime(ms,num+1));
     }
     return PointList;
@@ -119,8 +137,8 @@ int keyboardReact(sf::Event& event, std::vector<sf::Sprite>& SpriteList, std::ve
     int flag = 0;
     for(int i = 0; i < SpriteList.size(); i++)
     {
-        if((PointList[i].line == line) && (SpriteList[i].getPosition().y >= 420)
-                                    && (SpriteList[i].getPosition().y <= 520)
+        if((PointList[i].line == line) && (SpriteList[i].getPosition().y >= ACTIVE_ZONE_TOP-BALL_RADIUS)
+                                    && (SpriteList[i].getPosition().y <= ACTIVE_ZONE_BOTTOM-BALL_RADIUS)
                                     && (SpriteList[i].getColor() != BLUE))
             {
                 SpriteList[i].setColor(BLUE);
@@ -139,7 +157,7 @@ void drawAll(std::vector<sf::RectangleShape>& RectanglesList, std::vector<sf::Sp
 
     for(int i = 0; i < SpriteList.size(); i++)
     {
-        if((PointList[i].time <= deltaTime) && (SpriteList[i].getPosition().y <= 520)) // 1.7 cекунд на всю линию, 1.5 - до плашки
+        if((PointList[i].time <= deltaTime) && (SpriteList[i].getPosition().y <= ACTIVE_ZONE_BOTTOM-BALL_RADIUS)) // 1.7 cекунд на всю линию, 1.5 - до плашки
         {
             SpriteList[i].move(0, 1);
             //if(!(((int)deltaTime)%4))
@@ -155,7 +173,6 @@ void drawAll(std::vector<sf::RectangleShape>& RectanglesList, std::vector<sf::Sp
 
 int main(int argc, char* argv[])
 {
-    // big main try catch block
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "rhythm game");
 
     std::vector<sf::RectangleShape> RectanglesList;    

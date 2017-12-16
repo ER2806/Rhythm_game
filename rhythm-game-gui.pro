@@ -9,7 +9,8 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    easylogging++.cc
 
 
 LIBS += -L/home/daria/Downloads/SFML-master/lib -lsfml-audio -lsfml-system -lsfml-window -lsfml-graphics
@@ -18,5 +19,6 @@ INCLUDEPATH += /home/daria/Downloads/SFML-master/include
 DEPENDPATH += /home/daria/Downloads/SFML-master/include
 
 HEADERS += \
-    graph.hpp
+    graph.hpp \
+    easylogging++.h
 
