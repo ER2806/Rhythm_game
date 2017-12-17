@@ -2,6 +2,7 @@
 #include <server.h>
 #include "logging.h"
 #include "utils/networkutils.h"
+#include <multithreadserver.h>
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -10,8 +11,8 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     Logging::setUpSettings();
-    Server serv(getPort());
-
+    //Server serv(getPort());
+    MultithreadServer serv(getPort());
     try {
         serv.run();
     } catch(std::logic_error& ex) {

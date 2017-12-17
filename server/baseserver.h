@@ -4,6 +4,7 @@
 
 class BaseServer
 {
+
 public:
 
     BaseServer(int port): port(port) {}

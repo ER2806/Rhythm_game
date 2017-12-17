@@ -3,6 +3,7 @@
 Server::Server(int port, QObject* parent/* = 0*/) : QObject(parent), BaseServer(port), next_block_size(0),
                                                     tcp_server(std::make_unique<QTcpServer>(nullptr)) {}
 
+
 Server::~Server(){
 
     if (tcp_server)
@@ -55,10 +56,18 @@ void Server::slotReadClient() {
             in >> next_block_size;
         }
 
-        if (client->bytesAvailable() < next_block_size)
+        if (client->bytesAvailable() < next_block_size){
             break;
+        }
+
         next_block_size = 0;
+       /*requestManager(client->socketDescriptor());*/
         requestManager(client);
+//        RequestManagerTask* task = new RequestManagerTask();
+//        task->setAutoDelete(true);
+//        task->server = this;
+//        task->client = client;
+//        pool->start(task);
     }
 
 }
@@ -72,6 +81,18 @@ void Server::requestManager(QTcpSocket* client) {
 
 }
 
+
+//void Server::requestManager(qintptr sock_descriptor)  {
+
+//    QTcpSocket *socket = new QTcpSocket;
+//    socket->setSocketDescriptor(sock_descriptor);
+
+//    QDataStream in(socket);
+//    PackManager manag;
+//    ResponseStruct str =  manag.packToStruct(in);
+//    sendResultToClient(socket, str);
+
+//}
 
 void Server::sendResultToClient(QTcpSocket* client, ResponseStruct &str) {
 

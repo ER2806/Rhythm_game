@@ -10,8 +10,9 @@
 #include "../response_struct.h"
 #include "packmanager.h"
 #include "responseparser.h"
+#include "baseclient.h"
 
-class Client: public QObject {
+class Client: public QObject, public BaseClient {
 Q_OBJECT
 
 public:
@@ -38,8 +39,9 @@ private:
     void sendGetTrack(std::string& track_name);
     void sendGetPlaylist();
     void sendGetParsedTrack(std::string& track_name);
-    void responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& in);
-    void sendStructToServer(ResponseStruct&);
+
+    void responseManager(QDataStream& in) override;
+    void sendStructToServer(ResponseStruct&) override;
 
 };
 

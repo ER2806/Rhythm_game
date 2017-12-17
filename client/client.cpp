@@ -46,14 +46,14 @@ void Client::slotReadyRead() {
         }
 
         next_block_size = 0;
-        responseManager(client, in);
+        responseManager(in);
 
     }
 
 }
 
 
-void Client::responseManager(std::unique_ptr<QTcpSocket>& client, QDataStream& in){
+void Client::responseManager(QDataStream& in){
 
     ResponseStruct res;
     in >> res;
