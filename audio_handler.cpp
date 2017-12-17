@@ -36,7 +36,7 @@ void printArray(const std::array<std::vector<int>, BANDS>& array){
 #endif
 class AudioHandler::Private {
 public:
-    Private(const std::string& filename);
+    Private(const std::string& filename, AudioToFFTBass *worker);
     ~Private();
     void buildDotsFromFreq();
     int updateSpectrumInTime();
@@ -50,12 +50,13 @@ public:
     AudioToFFT* musicWorker;
 };
 
-AudioHandler::Private::Private(const std::string& filename) : sourceFilename(filename){
-    musicWorker = new AudioToFFTBass(filename);
+AudioHandler::Private::Private(const std::string& filename, AudioToFFTBass* worker)
+    : sourceFilename(filename), musicWorker(worker){
 }
 
 AudioHandler::AudioHandler(const std::string& filename){
-    private_group = new Private(filename);
+    AudioToFFTBass* worker = new AudioToFFTBass(filename);
+    private_group = new Private(filename, worker);
 }
 
 AudioHandler::~AudioHandler(){
@@ -69,14 +70,14 @@ AudioHandler::Private::~Private(){
 
 int AudioHandler::Private::updateSpectrumInTime(){
     std::array<int, BANDS> temp;
-    std::vector<float> fastFT = musicWorker->getFFT(2048);
+    std::vector<float> fastFT = musicWorker->getFFT(CONVERSION_SAMPLING);
     int b0_coef = 0;
     for(int X = 0; X < BANDS; X++) {
         int Y = 0;
         int maxY = 0;
         float peak = 0;
-        int b1_coef = pow(2, X * 10.0/(BANDS-1));
-        b1_coef = (b1_coef > 1023) ? 1023 : b1_coef;
+        int b1_coef = pow(2, X * SCALE_FREQ_COEF/(BANDS - 1));
+        b1_coef = (b1_coef > (CONVERSION_SAMPLING/2 - 1)) ? (CONVERSION_SAMPLING/2 - 1) : b1_coef;
         b1_coef = (b0_coef >= b1_coef) ? b0_coef + 1 : b1_coef;
         for (; b0_coef < b1_coef; b0_coef++){
             peak = (peak < fastFT[1 + b0_coef]) ? fastFT[1 + b0_coef] : peak;
@@ -84,7 +85,7 @@ int AudioHandler::Private::updateSpectrumInTime(){
             if (Y > SPECHEIGHT) Y = SPECHEIGHT; // cap it
             maxY = std::max(maxY, Y);
         }
-        freqArray[X].push_back(maxY); //
+        freqArray[X].push_back(maxY);
         temp[X] = maxY;
     }
     //freqArray.push_back(temp);

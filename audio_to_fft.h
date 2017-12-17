@@ -5,8 +5,6 @@
 
 class AudioToFFT{
 public:
-    //AudioToFFT(const std::string& filename);
-    //virtual ~AudioToFFT();
     virtual std::vector<float> getFFT(const int fftSize) = 0;
     virtual void startChannelPlay() = 0;
     virtual double getLengthTimeInMsec() = 0;

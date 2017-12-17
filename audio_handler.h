@@ -3,9 +3,12 @@
 #include <vector>
 #include <array>
 #include <string>
+
 const unsigned SPECHEIGHT = 1000;	// height (changing requires palette adjustments too)
 const unsigned BANDS = 3;
 const double TDIFF = 50; // setup update timer (20hz)
+const unsigned CONVERSION_SAMPLING = 2048;
+const unsigned SCALE_FREQ_COEF = 10.0;
 
 class AudioHandler{
 public:
