@@ -7,6 +7,8 @@
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include <fstream>
+#include "line.hpp"
+#include "sphere.hpp"
 
 struct PointInTime{
     int64_t time; // время в милисекундах с начала игры
@@ -18,13 +20,11 @@ struct PointInTime{
 void startGame();
 std::string getTrack();
 std::string getParsedTrack();
-void createLines(std::vector<sf::RectangleShape>& RectanglesList);
-std::vector<sf::Sprite> createNodes(std::vector<PointInTime>& PointList, sf::Texture& texture);
+std::vector<Line> createLines();
+std::vector<Sphere> createNodes(std::vector<PointInTime>& PointList, sf::Texture& texture);
 void createText(sf::Text& hit, sf::Text& miss);
 std::vector<PointInTime> getPoints();
-int keyboardReact(sf::Event& event, std::vector<sf::Sprite>& SpriteList, std::vector<PointInTime>& PointList);
-void drawAll(std::vector<sf::RectangleShape>& RectanglesList, std::vector<sf::Sprite>& SpriteList, 
-    std::vector<PointInTime>& PointList, float deltaTime, sf::RenderWindow& window, sf::Text& hit, sf::Text& miss);
+int keyboardReact(sf::Event& event, std::vector<Sphere> &SphereList, std::vector<PointInTime>& PointList);
 
 #endif
 
