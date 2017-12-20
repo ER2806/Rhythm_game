@@ -1,16 +1,5 @@
-#define NON_MERGING
-
-#ifndef NON_MERGING
-#include <QCoreApplication>
-#include <QApplication>
-#include "utils.h"
-#include "client.h"
-#endif
-
 #include "graph.hpp"
 #include "interface.hpp"
-#include "line.hpp"
-#include "sphere.hpp"
 #include "text.hpp"
 #include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
@@ -18,44 +7,7 @@ INITIALIZE_EASYLOGGINGPP
 #define WIDTH 600
 #define HEIGHT 600
 
-const int FONTSIZE = 24;
-const int SCORE_VERTICAL_PADDING = 10;
-const int HIT_SCORE_HORIZONTAL_PADDING = 10;
-const int MISS_SCORE_HORIZONTAL_PADDING = 550;
-const int BALL_RADIUS = 30;
-const int CROSS_ROAD_TIME = 1500;
-const int LINE_THICKNESS = 4;
-const int DISTANCE_BETWEEN_LINES = 50;
-const int HORIZONTAL_LINE_Y_POSITION = 480;
-const int HORIZONTAL_LINE_LENGTH = 200;
-const int VERTICAL_LINE_Y_INDENT = 50;
-const int ACTIVE_ZONE_TOP = 450;
-const int ACTIVE_ZONE_BOTTOM = 550;
-const int RIGHT_ANGLE = 90;
-const sf::Color WHITE = (sf::Color(255, 255, 255, 250));
-const sf::Color BLUE = (sf::Color(0,174,255,250));
 
-std::string getTrack() //получение адеса аудио
-{
-    #ifndef NON_MERGING
-    QApplication a(argc, argv);
-    Client webClient(getIpAddr(), getPort());
-    uint8_t errorCode;
-    std::string request = "haddawa.wav";
-    std::string audioFilename = webClient.getTrackFromServer(errorCode, request);
-    #endif
-    return "haddawa.wav";
-}
-
-std::string getParsedTrack()
-{
-    #ifndef NON_MERGING
-    request = "haddawa.wav";
-    std::string textFilename = webClient.getParsedTrackFromServer(errorCode, request);
-    std::cout << textFilename << std::endl;
-    #endif
-    return "test.txt";
-}
             
 std::vector<Line> createLines()
 {
@@ -96,12 +48,12 @@ std::vector<Sphere> createNodes(std::vector<PointInTime>& PointList, sf::Texture
     return SphereList;
 }
 
-std::vector<PointInTime> getPoints()
+std::vector<PointInTime> getPoints(WebGetter& wg)
 {
     std::vector<PointInTime> PointList;
     std::ifstream in;
  
-    in.open(getParsedTrack());
+    in.open(wg.getParsedTrack());
     size_t ms;
     int num;
     LOG(INFO) << "point array (line; time):";
@@ -141,10 +93,11 @@ int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector
 int main(int argc, char* argv[])
 {
     GraphicInterface mainInterface(WIDTH, HEIGHT, "rhythm game");
+    WebGetter webgetter;
 
     std::vector<Line> linesList = createLines();
     //try
-    std::vector<PointInTime> PointList = getPoints();  
+    std::vector<PointInTime> PointList = getPoints(webgetter);
     //show error
     sf::Texture texture;
     //try
@@ -153,7 +106,7 @@ int main(int argc, char* argv[])
     
     sf::SoundBuffer buffer;
     //try -> show error
-    if (!buffer.loadFromFile(getTrack()))
+    if (!buffer.loadFromFile(webgetter.getTrack()))
         return -1;
     sf::Sound sound;
     sound.setBuffer(buffer);
