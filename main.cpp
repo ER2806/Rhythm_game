@@ -1,28 +1,23 @@
+#include "easylogging++.h"
+INITIALIZE_EASYLOGGINGPP
+
 #include "graph.hpp"
 #include "interface.hpp"
 #include "text.hpp"
-#include "easylogging++.h"
-INITIALIZE_EASYLOGGINGPP
+#include "eventanalyzer.hpp"
 
 #define WIDTH 600
 #define HEIGHT 600
 
-
-            
 std::vector<Line> createLines()
 {
     std::vector<Line> lineList;
     for(int i = 0; i < 3; i++)
     {
-        /*sf::RectangleShape line(sf::Vector2f(HEIGHT-VERTICAL_LINE_Y_INDENT*2, LINE_THICKNESS));
-        line.setPosition(WIDTH/2 + DISTANCE_BETWEEN_LINES*(i-1),DISTANCE_BETWEEN_LINES);
-        line.rotate(RIGHT_ANGLE);*/
         Line line(HEIGHT-VERTICAL_LINE_Y_INDENT*2, LINE_THICKNESS, WIDTH/2 + DISTANCE_BETWEEN_LINES*(i-1),
                   DISTANCE_BETWEEN_LINES, RIGHT_ANGLE);
         lineList.push_back(line);
     }
-    /*sf::RectangleShape lineh(sf::Vector2f(HORIZONTAL_LINE_LENGTH, LINE_THICKNESS));
-    lineh.setPosition(WIDTH/2-HORIZONTAL_LINE_LENGTH/2,HORIZONTAL_LINE_Y_POSITION);*/
     Line lineh(HORIZONTAL_LINE_LENGTH, LINE_THICKNESS, WIDTH/2-HORIZONTAL_LINE_LENGTH/2, HORIZONTAL_LINE_Y_POSITION, 0);
     lineList.push_back(lineh);
     return lineList;
@@ -69,12 +64,10 @@ std::vector<PointInTime> getPoints(WebGetter& wg)
 int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector<PointInTime>& PointList)
 {
     int line;
-    if (event.key.code == sf::Keyboard::A)
-        line = 1;
-    else if(event.key.code == sf::Keyboard::S)
-        line = 2;
-    else if(event.key.code == sf::Keyboard::D)
-        line = 3;
+    EventAnalyser analyser;
+    line = analyser.Analyze(event);
+    if(line==-1)
+        LOG(INFO) << "ANALYZER ERROR";
 
     int flag = 0;
     for(int i = 0; i < SphereList.size(); i++)
