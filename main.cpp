@@ -5,6 +5,7 @@ INITIALIZE_EASYLOGGINGPP
 #include "interface.hpp"
 #include "text.hpp"
 #include "eventanalyzer.hpp"
+#include "loaderfromfile.hpp"
 
 #define WIDTH 600
 #define HEIGHT 600
@@ -88,13 +89,18 @@ int main(int argc, char* argv[])
     GraphicInterface mainInterface(WIDTH, HEIGHT, "rhythm game");
     WebGetter webgetter;
 
+    Loader* loader = new LoaderFromFile();
+    sf::Texture texture;
+    sf::Font font;
+    //try
+    loader->LoadTexture("resourse/sphere.png", texture);
+    // try -> show error
+    loader->LoadFont("resourse/VoniqueBold.ttf", font);
+    delete loader;
+
     std::vector<Line> linesList = createLines();
     //try
     std::vector<PointInTime> PointList = getPoints(webgetter);
-    //show error
-    sf::Texture texture;
-    //try
-    texture.loadFromFile("sphere.png");
     std::vector<Sphere> SphereList = createNodes(PointList,texture);
     
     sf::SoundBuffer buffer;
@@ -110,12 +116,9 @@ int main(int argc, char* argv[])
     clock.restart();
     int counterHit = 0;
     int counterMiss = 0;
-    sf::Font font;
     Text hit(font, FONTSIZE, WHITE, HIT_SCORE_HORIZONTAL_PADDING, SCORE_VERTICAL_PADDING);
     Text miss(font, FONTSIZE, WHITE, MISS_SCORE_HORIZONTAL_PADDING, SCORE_VERTICAL_PADDING);
 
-    // try -> show error
-    font.loadFromFile("VoniqueBold.ttf");
     while (mainInterface.isGameOpen())
     {
         deltaTime = clock.getElapsedTime().asMilliseconds();
