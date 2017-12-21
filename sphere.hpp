@@ -11,8 +11,11 @@ public:
     sf::Color getColor() const;
     void setColor(sf::Color);
     void setPosition(int posx, int posy);
+    void recieveSignal();
 private:
     sf::Sprite sphere;
+    const sf::Color inactiveColor = (sf::Color(255, 255, 255, 250));
+    const sf::Color activeColor = (sf::Color(0,174,255,250));
 };
 
 #endif // SPHERE_HPP

@@ -7,30 +7,28 @@ INITIALIZE_EASYLOGGINGPP
 #include "eventanalyzer.hpp"
 #include "loaderfromfile.hpp"
 
-#define WIDTH 600
-#define HEIGHT 600
 
-std::vector<Line> createLines()
+std::vector<Line> createLines(ConfigurationManager confg)
 {
     std::vector<Line> lineList;
     for(int i = 0; i < 3; i++)
     {
-        Line line(HEIGHT-VERTICAL_LINE_Y_INDENT*2, LINE_THICKNESS, WIDTH/2 + DISTANCE_BETWEEN_LINES*(i-1),
+        Line line(confg.getHeight()-VERTICAL_LINE_Y_INDENT*2, LINE_THICKNESS, confg.getWidth()/2 + DISTANCE_BETWEEN_LINES*(i-1),
                   DISTANCE_BETWEEN_LINES, RIGHT_ANGLE);
         lineList.push_back(line);
     }
-    Line lineh(HORIZONTAL_LINE_LENGTH, LINE_THICKNESS, WIDTH/2-HORIZONTAL_LINE_LENGTH/2, HORIZONTAL_LINE_Y_POSITION, 0);
+    Line lineh(HORIZONTAL_LINE_LENGTH, LINE_THICKNESS, confg.getWidth()/2-HORIZONTAL_LINE_LENGTH/2, HORIZONTAL_LINE_Y_POSITION, 0);
     lineList.push_back(lineh);
     return lineList;
 }
 
-std::vector<Sphere> createNodes(std::vector<PointInTime>& PointList, sf::Texture& texture)
+std::vector<Sphere> createNodes(std::vector<PointInTime>& PointList, sf::Texture& texture,  ConfigurationManager confg)
 {
     std::vector<Sphere> SphereList;
     for(int i = 0; i < PointList.size(); i++)
     {
         Sphere sp(texture, BALL_RADIUS, WHITE,
-                  WIDTH/2 - DISTANCE_BETWEEN_LINES*2 + DISTANCE_BETWEEN_LINES * PointList[i].line - BALL_RADIUS,
+                  confg.getWidth()/2 - DISTANCE_BETWEEN_LINES*2 + DISTANCE_BETWEEN_LINES * PointList[i].line - BALL_RADIUS,
                   VERTICAL_LINE_Y_INDENT - BALL_RADIUS);
         if(PointList[i].time < CROSS_ROAD_TIME)
         {
@@ -77,7 +75,7 @@ int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector
                                     && (SphereList[i].getPositionY() <= ACTIVE_ZONE_BOTTOM-BALL_RADIUS)
                                     && (SphereList[i].getColor() != BLUE))
             {
-                SphereList[i].setColor(BLUE);
+                SphereList[i].recieveSignal();
                 return 1; //hit
             }
     }
@@ -86,7 +84,9 @@ int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector
 
 int main(int argc, char* argv[])
 {
-    GraphicInterface mainInterface(WIDTH, HEIGHT, "rhythm game");
+    ConfigurationManager config("resourse/gui.conf");
+    LOG(INFO) << "\nconfig information:" << config.getWidth() << " " << config.getHeight() << std::endl;
+    GraphicInterface mainInterface(config.getWidth(), config.getHeight(), "rhythm game");
     WebGetter webgetter;
 
     Loader* loader = new LoaderFromFile();
@@ -98,10 +98,10 @@ int main(int argc, char* argv[])
     loader->LoadFont("resourse/VoniqueBold.ttf", font);
     delete loader;
 
-    std::vector<Line> linesList = createLines();
+    std::vector<Line> linesList = createLines(config);
     //try
     std::vector<PointInTime> PointList = getPoints(webgetter);
-    std::vector<Sphere> SphereList = createNodes(PointList,texture);
+    std::vector<Sphere> SphereList = createNodes(PointList,texture,config);
     
     sf::SoundBuffer buffer;
     //try -> show error

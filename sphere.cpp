@@ -35,3 +35,8 @@ sf::Sprite Sphere::getSphere() const
 {
     return sphere;
 }
+
+void Sphere::recieveSignal()
+{
+    sphere.setColor(activeColor);
+}

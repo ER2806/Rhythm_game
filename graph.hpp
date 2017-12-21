@@ -19,6 +19,7 @@
 #include "line.hpp"
 #include "sphere.hpp"
 #include "webgetter.hpp"
+#include "configmanager.hpp"
 
 const int FONTSIZE = 24;
 const int SCORE_VERTICAL_PADDING = 10;
@@ -47,8 +48,8 @@ struct PointInTime{
 void startGame();
 std::string getTrack();
 std::string getParsedTrack();
-std::vector<Line> createLines();
-std::vector<Sphere> createNodes(std::vector<PointInTime>& PointList, sf::Texture& texture);
+std::vector<Line> createLines( ConfigurationManager confg);
+std::vector<Sphere> createNodes(std::vector<PointInTime>& PointList, sf::Texture& texture, ConfigurationManager confg);
 void createText(sf::Text& hit, sf::Text& miss);
 std::vector<PointInTime> getPoints(WebGetter &wg);
 int keyboardReact(sf::Event& event, std::vector<Sphere> &SphereList, std::vector<PointInTime>& PointList);
