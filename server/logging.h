@@ -10,6 +10,7 @@ public:
     ~Logging() = default;
 
     static void setUpSettings() {
+
         el::Loggers::reconfigureAllLoggers(el::ConfigurationType::Filename, "/Users/mac/Documents/Technopark/RhytmGame/Rhythm_game/server/logs/mylogs.log");
         el::Loggers::reconfigureAllLoggers(el::ConfigurationType::Format, "%level %datetime{%H:%m:%s} (%func): %msg");
         /* Выключаем выдачу на экран  */

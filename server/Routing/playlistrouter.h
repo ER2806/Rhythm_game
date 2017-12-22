@@ -2,6 +2,7 @@
 #define PLAYLISTROUTER_H
 
 #include "baserouter.h"
+#include "configvalues.h"
 
 class PlaylistRouter: public BaseRouter {
 public:
@@ -10,7 +11,7 @@ public:
 
     QString getPath() override{
 
-       return QString ("/Users/mac/Documents/Technopark/RhytmGame/MyServer/music/playlist.txt");
+        return ConfigValues::playlist_path;
 
     }
 

@@ -32,6 +32,7 @@ void PackManager::packMusic(QDataStream &in, ResponseStruct &res) {
     QString path = createPathToMusic(track);
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)){
+
         LOG(ERROR) << "Music not fount. Music finding here: " << path.toStdString();
         packErrorMsg(res, ErrorCodes::TRACK_NOT_FOUND);
 

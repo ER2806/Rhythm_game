@@ -2,8 +2,8 @@
 #define MULTITHREADSERVER_H
 
 #include <QTcpServer>
-#include "baseserver.h"
 #include <QObject>
+#include "baseserver.h"
 
 class MultithreadServer: public QTcpServer, public BaseServer
 {
@@ -13,6 +13,7 @@ public:
     virtual void run() override;
 
 protected:
+
     void incomingConnection( qintptr socketDescriptor );
 
 };

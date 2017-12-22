@@ -19,6 +19,7 @@
 class MyThread : public QThread
 {
     Q_OBJECT
+
 public:
     explicit MyThread(qintptr ID, QObject *parent = 0);
 

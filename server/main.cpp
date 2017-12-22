@@ -1,8 +1,9 @@
 #include <QApplication>
-#include <server.h>
+#include <string>
+#include "server.h"
 #include "logging.h"
-#include "utils/networkutils.h"
-#include <multithreadserver.h>
+#include "multithreadserver.h"
+#include "configvalues.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -10,9 +11,22 @@ int main(int argc, char *argv[])
 {
 
     QApplication a(argc, argv);
+    if (argc < 2) {
+        qDebug() << "You mast add the config path";
+        return 0;
+    }
+
+   std::string path = argv[1];
+
+
+    if (ConfigValues::setupConfigs(path) == false){
+
+        return 0;
+    }
+
     Logging::setUpSettings();
-    //Server serv(getPort());
-    MultithreadServer serv(getPort());
+
+    MultithreadServer serv(ConfigValues::port);
     try {
         serv.run();
     } catch(std::logic_error& ex) {

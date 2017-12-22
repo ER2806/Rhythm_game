@@ -61,13 +61,8 @@ void Server::slotReadClient() {
         }
 
         next_block_size = 0;
-       /*requestManager(client->socketDescriptor());*/
         requestManager(client);
-//        RequestManagerTask* task = new RequestManagerTask();
-//        task->setAutoDelete(true);
-//        task->server = this;
-//        task->client = client;
-//        pool->start(task);
+
     }
 
 }
@@ -81,18 +76,6 @@ void Server::requestManager(QTcpSocket* client) {
 
 }
 
-
-//void Server::requestManager(qintptr sock_descriptor)  {
-
-//    QTcpSocket *socket = new QTcpSocket;
-//    socket->setSocketDescriptor(sock_descriptor);
-
-//    QDataStream in(socket);
-//    PackManager manag;
-//    ResponseStruct str =  manag.packToStruct(in);
-//    sendResultToClient(socket, str);
-
-//}
 
 void Server::sendResultToClient(QTcpSocket* client, ResponseStruct &str) {
 

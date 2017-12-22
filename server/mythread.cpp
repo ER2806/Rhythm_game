@@ -23,10 +23,11 @@ void MyThread::run()
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()), Qt::DirectConnection);
     connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
 
-    qDebug() << socketDescriptor << " Client connected";
+    LOG(INFO) << "New client connection. Sock_ID = " << socketDescriptor;
 
 
     exec();
+
 }
 
 void MyThread::readyRead()
@@ -78,7 +79,7 @@ void MyThread::sendResultToClient(ResponseStruct &str) {
 
 void MyThread::disconnected() {
 
-    LOG(INFO) << socketDescriptor << " Disconnected";
+    LOG(INFO) << "Sock_ID = " <<  socketDescriptor << " Disconnected";
     socket->deleteLater();
     exit(0);
 
