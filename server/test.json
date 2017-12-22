@@ -5,6 +5,7 @@
    "routing": {
    		"music_path": "/Users/mac/Documents/Technopark/RhytmGame/MyServer/music/", 
    		"parsed_music_path": "/Users/mac/Documents/Technopark/RhytmGame/MyServer/music/",
-   		"playlist_path": "/Users/mac/Documents/Technopark/RhytmGame/MyServer/music/playlist.txt"
+   		"playlist_path": "/Users/mac/Documents/Technopark/RhytmGame/MyServer/music/playlist.txt",
+   		"log_file_path": "/Users/mac/Documents/Technopark/RhytmGame/Rhythm_game/server/logs/mylogs.log"
    }
 }

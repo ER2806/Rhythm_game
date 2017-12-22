@@ -20,6 +20,7 @@ public:
     static QString music_path;
     static QString parsed_music_path;
     static QString playlist_path;
+    static QString log_file_path;
 
 };
 

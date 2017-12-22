@@ -26,5 +26,4 @@ void test() {
 
     std::cout << "all_ok" << std::endl;
 
-
 }

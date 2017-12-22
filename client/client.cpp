@@ -1,5 +1,5 @@
 #include "client.h"
-#include "logging.h"
+#include "../logging.h"
 
 Client::Client(const std::string& host, int port, QObject* parent): QObject(parent), next_block_size(0)
 {

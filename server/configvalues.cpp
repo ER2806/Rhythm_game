@@ -5,7 +5,7 @@ int ConfigValues::port = 8000;
 QString ConfigValues::music_path = "";
 QString ConfigValues::parsed_music_path = "";
 QString ConfigValues::playlist_path = "";
-
+QString ConfigValues::log_file_path = "";
 
 bool ConfigValues::setupConfigs(std::string &path_to_config) {
 
@@ -31,10 +31,12 @@ bool ConfigValues::setupConfigs(std::string &path_to_config) {
         return false;
     }
 
+
     QJsonValue port_value = ip_addr.value("port");
     QJsonValue music_path_value = routing_pathes.value("music_path");
     QJsonValue parsed_music_path_value = routing_pathes.value("parsed_music_path");
     QJsonValue playlist_path_value = routing_pathes.value("playlist_path");
+    QJsonValue log_file_path_value = routing_pathes.value("log_file_path");
 
     if (port_value.isUndefined() || music_path_value.isUndefined() ||
             parsed_music_path_value.isUndefined() || playlist_path_value.isUndefined()) {
@@ -43,10 +45,12 @@ bool ConfigValues::setupConfigs(std::string &path_to_config) {
 
     }
 
+
     ConfigValues::port = port_value.toInt();
     ConfigValues::music_path = music_path_value.toString();
     ConfigValues::parsed_music_path = parsed_music_path_value.toString();
     ConfigValues::playlist_path = playlist_path_value.toString();
+    ConfigValues::log_file_path = log_file_path_value.toString();
 
     return true;
 
