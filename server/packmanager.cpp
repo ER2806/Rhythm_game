@@ -52,6 +52,20 @@ void PackManager::packParsedMusic(QDataStream &in, ResponseStruct &res) {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
         LOG(ERROR) << "Parsed music not fount. Finding here: " << path.toStdString();
+        // !!!use audio_hendler here!!!
+        /*
+
+        QString path_to_unparsed = createPathToParsedMusic(track);
+        audioHandler hadler();
+        QString parsed_music = handler.parse(path_to_unparsed).toString;
+        if (some_error) {
+            packErrorMsg(res, ErrorCodes::PARSED_MUSIC_ERROR);
+            retrurn;
+        }
+
+        writeFileContentToByteArray(parsed_music, res.data);
+        */
+
         packErrorMsg(res, ErrorCodes::PARSED_MUSIC_ERROR);
         return;
     }
