@@ -35,6 +35,8 @@ const int VERTICAL_LINE_Y_INDENT = 50;
 const int ACTIVE_ZONE_TOP = 450;
 const int ACTIVE_ZONE_BOTTOM = 550;
 const int RIGHT_ANGLE = 90;
+const int BUTTON_SIZE_X = 240;
+const int BUTTON_SIZE_Y = 56;
 const sf::Color WHITE = (sf::Color(255, 255, 255, 250));
 const sf::Color BLUE = (sf::Color(0,174,255,250));
 

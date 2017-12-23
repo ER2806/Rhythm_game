@@ -27,3 +27,13 @@ std::string WebGetter::getParsedTrack()
     #endif
     return "test.txt";
 }
+
+std::vector<std::string> WebGetter::getTrackList()
+{
+    #ifndef NON_MERGING
+    // что-то с сервера
+    #endif
+    std::vector<std::string> temp;
+    temp.push_back("Haddaway - what is love");
+    return temp;
+}

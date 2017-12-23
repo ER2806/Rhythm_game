@@ -29,6 +29,18 @@ void GraphicInterface::draw(const Text& text)
     window->draw(text.getText());
 }
 
+void GraphicInterface::draw(const Button& button)
+{
+    window->draw(button.getButton());
+    window->draw(button.getText());
+}
+
+void GraphicInterface::draw(const SpinBox& spinbox)
+{
+    window->draw(spinbox.getSpinBox());
+    window->draw(spinbox.getText());
+}
+
 void GraphicInterface::render()
 {
     window->display();

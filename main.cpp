@@ -6,6 +6,8 @@ INITIALIZE_EASYLOGGINGPP
 #include "text.hpp"
 #include "eventanalyzer.hpp"
 #include "loaderfromfile.hpp"
+#include "button.hpp"
+#include "spinbox.hpp"
 
 
 std::vector<Line> createLines(ConfigurationManager confg)
@@ -84,18 +86,33 @@ int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector
 
 int main(int argc, char* argv[])
 {
+    int GameMode = 0; // 0 - start screen, 1 - choose and play screen, 3 - action screen
     ConfigurationManager config("resourse/gui.conf");
-    LOG(INFO) << "\nconfig information:" << config.getWidth() << " " << config.getHeight() << std::endl;
     GraphicInterface mainInterface(config.getWidth(), config.getHeight(), "rhythm game");
     WebGetter webgetter;
-
     Loader* loader = new LoaderFromFile();
-    sf::Texture texture;
     sf::Font font;
+    // try -> show error
+    loader->LoadFont("resourse/gothic.ttf", font);
+
+    //button
+    sf::Texture btnTexture;
+    //try
+    loader->LoadTexture("resourse/btn1.png", btnTexture);
+    Button btn(btnTexture, "start game", font, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getHeight()/2 - BUTTON_SIZE_Y/2);
+
+    //spinbox
+    sf::Texture spnTexture;
+    //try
+    loader->LoadTexture("resourse/spn1.png", spnTexture);
+    Button btn2(btnTexture, "play", font, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getHeight()/2 - BUTTON_SIZE_Y/2);
+    SpinBox spnbx(spnTexture, config.getWidth()/2 - 500/2, config.getHeight()/2 - 80/2 - 100,
+                  webgetter.getTrackList(), font);
+
+    sf::Texture texture;
     //try
     loader->LoadTexture("resourse/sphere.png", texture);
-    // try -> show error
-    loader->LoadFont("resourse/VoniqueBold.ttf", font);
+
     delete loader;
 
     std::vector<Line> linesList = createLines(config);
@@ -109,11 +126,12 @@ int main(int argc, char* argv[])
         return -1;
     sf::Sound sound;
     sound.setBuffer(buffer);
-    sound.play();
+    int isMusicPlaying = 0;
+    //sound.play();
 
     float deltaTime = 0.0f;
     sf::Clock clock;
-    clock.restart();
+
     int counterHit = 0;
     int counterMiss = 0;
     Text hit(font, FONTSIZE, WHITE, HIT_SCORE_HORIZONTAL_PADDING, SCORE_VERTICAL_PADDING);
@@ -125,7 +143,7 @@ int main(int argc, char* argv[])
         sf::Event event;
         while (mainInterface.pollEvent(event))
         {
-             switch (event.type)
+            switch (event.type)
             {
                 // window closed
                 case sf::Event::Closed:
@@ -133,33 +151,79 @@ int main(int argc, char* argv[])
                 // key pressed
                 case sf::Event::KeyPressed:
                 {
+                    if(GameMode != 2)
+                        break;
                     if(keyboardReact(event, SphereList, PointList) == 1)
                         counterHit++;
                     else
                         counterMiss++;
                     break;
                 }
-            }
-        }
-        hit.setValue(counterHit);
-        miss.setValue(counterMiss);
+                case sf::Event::MouseButtonPressed:
+                {
+                    if(GameMode == 2)
+                        break;
+                    else if(GameMode == 0)
+                    {
+                        if((event.mouseButton.x > (config.getWidth()/2 - BUTTON_SIZE_X/2)) &&
+                                (event.mouseButton.x < (config.getWidth()/2 + BUTTON_SIZE_X/2)) &&
+                                (event.mouseButton.y > config.getHeight()/2 - BUTTON_SIZE_Y/2) &&
+                                (event.mouseButton.y < config.getHeight()/2 + BUTTON_SIZE_Y/2))
+                        {
+                            GameMode = 1;
 
-        mainInterface.clear();
-        for(int i = 0; i < 4; i++)
-            mainInterface.draw(linesList[i]);
-        for(int i = 0; i < SphereList.size(); i++)
-        {
-            if((PointList[i].time <= deltaTime) && (SphereList[i].getPositionY() <= ACTIVE_ZONE_BOTTOM-BALL_RADIUS)) // 1.7 cекунд на всю линию, 1.5 - до плашки
-            {
-                SphereList[i].setPosition(0, 1);
-                //if(!(((int)deltaTime)%4))
-                //    SpriteList[i].move(0, 1);
-                mainInterface.draw(SphereList[i]);
+                        }
+                    }
+                    else if(GameMode == 1)
+                    {
+                        if((event.mouseButton.x > (config.getWidth()/2 - BUTTON_SIZE_X/2)) &&
+                                (event.mouseButton.x < (config.getWidth()/2 + BUTTON_SIZE_X/2)) &&
+                                (event.mouseButton.y > config.getHeight()/2 - BUTTON_SIZE_Y/2) &&
+                                (event.mouseButton.y < config.getHeight()/2 + BUTTON_SIZE_Y/2))
+                        {
+                            GameMode = 2;
+                            sound.play();
+                            clock.restart();
+                        }
+
+                    }
+                    break;
+                }
+
             }
         }
-        mainInterface.draw(hit);
-        mainInterface.draw(miss);
+        mainInterface.clear();
+        if(GameMode == 2)
+        {
+            hit.setValue(counterHit);
+            miss.setValue(counterMiss);
+
+
+            for(int i = 0; i < 4; i++)
+                mainInterface.draw(linesList[i]);
+            for(int i = 0; i < SphereList.size(); i++)
+            {
+                if((PointList[i].time <= deltaTime) && (SphereList[i].getPositionY() <= ACTIVE_ZONE_BOTTOM-BALL_RADIUS)) // 1.7 cекунд на всю линию, 1.5 - до плашки
+                {
+                    SphereList[i].setPosition(0, 1);
+                    //if(!(((int)deltaTime)%4))
+                    //    SpriteList[i].move(0, 1);
+                    mainInterface.draw(SphereList[i]);
+                }
+            }
+            mainInterface.draw(hit);
+            mainInterface.draw(miss);
+        }
+        if(GameMode == 1)
+        {
+            mainInterface.draw(spnbx);
+            mainInterface.draw(btn2);
+        }
+        if(GameMode == 0)
+            mainInterface.draw(btn);
         mainInterface.render();
     }
     return 0;
 }
+
+

@@ -4,6 +4,8 @@
 #include "line.hpp"
 #include "sphere.hpp"
 #include "text.hpp"
+#include "button.hpp"
+#include "spinbox.hpp"
 
 class GraphicInterface{
 public:
@@ -14,6 +16,8 @@ public:
     void draw(const Line& object);
     void draw(const Sphere& sphere);
     void draw(const Text& text);
+    void draw(const Button& button);
+    void draw(const SpinBox& spinbox);
     void render();
     bool isGameOpen();
     void clear();
