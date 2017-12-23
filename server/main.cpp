@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <string>
 #include "server.h"
-#include "../logging.h"
+#include "logging.h"
 #include "multithreadserver.h"
 #include "configvalues.h"
 

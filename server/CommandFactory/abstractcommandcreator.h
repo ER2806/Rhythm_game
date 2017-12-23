@@ -1,8 +1,7 @@
 #ifndef ABSTRACTCOMMANDCREATOR_H
 #define ABSTRACTCOMMANDCREATOR_H
 
-#include "../commands/basepackcommand.h"
-
+#include "commands/basepackcommand.h"
 
 class AbstractPackCommandCreator
 {

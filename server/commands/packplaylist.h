@@ -1,5 +1,6 @@
 #ifndef PACKPLAYLIST_H
 #define PACKPLAYLIST_H
+
 #include "commands/basepackcommand.h"
 
 class PackPlaylist: public BasePackCommand {

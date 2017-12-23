@@ -1,5 +1,6 @@
 #ifndef PACKPARSEDMUSIC_H
 #define PACKPARSEDMUSIC_H
+
 #include "commands/basepackcommand.h"
 
 class PackParsedMusic: public BasePackCommand {

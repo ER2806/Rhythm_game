@@ -2,7 +2,6 @@
 #define PARSEDMUSICROUTER_H
 
 #include "baserouter.h"
-#include "configvalues.h"
 
 class ParsedMusicRouter: public BaseRouter {
 public:

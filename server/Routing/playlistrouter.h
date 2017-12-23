@@ -2,7 +2,6 @@
 #define PLAYLISTROUTER_H
 
 #include "baserouter.h"
-#include "configvalues.h"
 
 class PlaylistRouter: public BaseRouter {
 public:

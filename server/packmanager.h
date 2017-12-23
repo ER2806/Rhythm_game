@@ -5,8 +5,8 @@
 #include <QDataStream>
 #include <QTextStream>
 #include <QFile>
-#include "../response_struct.h"
-#include "../logging.h"
+#include "response_struct.h"
+#include "logging.h"
 #include "Routing/musicrouter.h"
 #include "Routing/parsedmusicrouter.h"
 #include "Routing/playlistrouter.h"

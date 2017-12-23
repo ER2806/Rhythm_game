@@ -2,6 +2,7 @@
 #define BASEROUTER_H
 
 #include <QString>
+#include "configvalues.h"
 
 class BaseRouter {
 public:

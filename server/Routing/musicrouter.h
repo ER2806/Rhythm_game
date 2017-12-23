@@ -2,7 +2,6 @@
 #define MUSICROUTER_H
 
 #include "baserouter.h"
-#include "configvalues.h"
 
 class MusicRouter: public BaseRouter {
 public:
