@@ -35,5 +35,6 @@ std::vector<std::string> WebGetter::getTrackList()
     #endif
     std::vector<std::string> temp;
     temp.push_back("Haddaway - what is love");
+    temp.push_back("There is no song yet");
     return temp;
 }

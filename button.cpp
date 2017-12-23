@@ -9,7 +9,7 @@ Button::Button(sf::Texture &texture, std::string t, sf::Font& font, int posx, in
     text.setCharacterSize(24);
     text.setString(t);
     text.setFillColor(sf::Color(0, 0, 0, 255));
-    text.setPosition(posx+40, posy+10);
+    text.setPosition(posx + (8-t.length()/2)*15, posy+10);
 }
 
 Button::~Button()

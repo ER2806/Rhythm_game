@@ -185,7 +185,16 @@ int main(int argc, char* argv[])
                             sound.play();
                             clock.restart();
                         }
-
+                        else if((event.mouseButton.x > 490) &&
+                                (event.mouseButton.x < 550) &&
+                                (event.mouseButton.y > 160) &&
+                                (event.mouseButton.y < 200))
+                            spnbx.next();
+                        else if((event.mouseButton.x > 490) &&
+                                (event.mouseButton.x < 550) &&
+                                (event.mouseButton.y > 200) &&
+                                (event.mouseButton.y < 240))
+                            spnbx.prev();
                     }
                     break;
                 }
