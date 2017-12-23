@@ -1,8 +1,9 @@
 #include "test.h"
+#include "configvalues.h"
 
 void test() {
 
-    Client client(getIpAddr(), getPort());
+    Client client(ConfigValues::host.toStdString(), ConfigValues::port);
     std::string name("shape.wav");
     std::string name2("test");
     quint8 error_code = 0;

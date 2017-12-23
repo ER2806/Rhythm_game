@@ -2,6 +2,7 @@
 #define PARSEDMUSICROUTER_H
 
 #include "baserouter.h"
+#include "configvalues.h"
 
 class ParsedMusicRouter: public BaseRouter {
 public:
@@ -10,9 +11,10 @@ public:
 
     QString getPath() override{
 
-       return QString("/Users/mac/Documents/Technopark/RhytmGame/MyServer/client/music/");
+       return ConfigValues::parsed_music_path;
 
     }
+
 };
 
 
