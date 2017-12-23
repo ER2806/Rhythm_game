@@ -1,11 +1,11 @@
 #include "client.h"
-#include "../logging.h"
+#include "logging.h"
 
 Client::Client(const std::string& host, int port, QObject* parent): QObject(parent), next_block_size(0)
 {
     this->is_executed_response = false;
 
-    client = std::make_unique<QTcpSocket>(new QTcpSocket(this));
+    client = std::make_unique<QTcpSocket>(this);
     client->connectToHost(QString::fromStdString(host), port);
     connect(client.get(), SIGNAL(connected()), SLOT(slotConnected()));
     connect(client.get(), SIGNAL(readyRead()), SLOT(slotReadyRead()));

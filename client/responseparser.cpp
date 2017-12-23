@@ -1,4 +1,5 @@
 #include "responseparser.h"
+#include <QDateTime>
 
 quint8 ResponseParser::getErrorMsg(QByteArray &in) {
 
@@ -12,7 +13,7 @@ quint8 ResponseParser::getErrorMsg(QByteArray &in) {
 quint8 ResponseParser::getMusic(QByteArray &in, std::string &res) {
 
     QByteArray music = in;
-    QString track_name("new.vaw"); // На стороне клиента запрошенная музыка будет сохранена под именем  new.vaw
+    QString track_name = getCurrentDateTime() + ".vaw";
     QString path = createPathToMusic(track_name);
 
     res = path.toStdString();
@@ -23,7 +24,8 @@ quint8 ResponseParser::getMusic(QByteArray &in, std::string &res) {
 quint8 ResponseParser::getParsedMusic(QByteArray &in, std::string &res) {
 
     QByteArray parsed_music = in;
-    QString file_name("parsed.txt");
+    QString file_name = getCurrentDateTime() +  "_parsed.txt";
+
     QString path = createPathToParsedMusic(file_name);
 
     res = path.toStdString();
@@ -62,6 +64,13 @@ QString ResponseParser::createPathToParsedMusic(QString& track) {
 
     ParsedMusicRouter rout;
     return rout.getPath() + track;
+
+}
+
+QString ResponseParser::getCurrentDateTime() {
+
+    QDateTime current = QDateTime::currentDateTime();
+    return current.toString("dd-MM-yyyy_hh:mm:ss");
 
 }
 

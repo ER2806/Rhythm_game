@@ -13,7 +13,7 @@ Server::~Server(){
 
 void Server::run() {
 
-    tcp_server = std::make_unique<QTcpServer>(new QTcpServer(this));
+    tcp_server = std::make_unique<QTcpServer>(this);
     if (!tcp_server->listen(QHostAddress::Any, port)) {
         LOG(ERROR) << "Enable to start server in port "  << port << " " << tcp_server->errorString().toStdString();
         throw std::logic_error(tcp_server->errorString().toStdString());

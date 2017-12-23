@@ -3,10 +3,10 @@
 
 #include <map>
 #include "commandcreator.h"
-#include "../commands/packparsedmusic.h"
-#include "../commands/packmusiccomand.h"
-#include "../commands/packplaylist.h"
-#include "../utils/enumcommands.h"
+#include "commands/packparsedmusic.h"
+#include "commands/packmusiccomand.h"
+#include "commands/packplaylist.h"
+#include "utils/enumcommands.h"
 
 class PackCommandFactory {
 private:
@@ -35,7 +35,8 @@ public:
 
 
     BasePackCommand* getCommand(const int& key) {
-        std::map<int, std::unique_ptr<AbstractPackCommandCreator>>::iterator it = commands.find(key);
+
+        auto it = commands.find(key);
         if (it != commands.end()) {
             return it->second->create();
             //return commands[key]->create();
@@ -51,8 +52,7 @@ public:
     template <class C>
     void addCommand(const int& key) {
 
-        std::map<int, std::unique_ptr<AbstractPackCommandCreator>>::iterator it = commands.find(key);
-
+        auto it = commands.find(key);
         if (it == commands.end()) {
 
             commands[key] = std::unique_ptr<AbstractPackCommandCreator>(new PackCommandCreator<C>());

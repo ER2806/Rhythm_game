@@ -7,7 +7,7 @@
 #include <QTcpSocket>
 #include <vector>
 #include "utils/delay.h"
-#include "../response_struct.h"
+#include "response_struct.h"
 #include "packmanager.h"
 #include "responseparser.h"
 #include "baseclient.h"

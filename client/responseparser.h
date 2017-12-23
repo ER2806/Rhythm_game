@@ -5,10 +5,11 @@
 #include <QFile>
 #include <string>
 #include <sstream>
+#include <QString>
 #include "Routing/musicrouter.h"
 #include "Routing/parsedmusicrouter.h"
 #include "utils/enumcommands.h"
-#include <QString>
+
 
 class ResponseParser
 {
@@ -25,7 +26,9 @@ private:
 
     static QString createPathToMusic(QString&);
     static QString createPathToParsedMusic(QString&);
+    static QString getCurrentDateTime();
     static quint8 createFileFromByteArray(QByteArray& data, QString& path);
+
 };
 
 

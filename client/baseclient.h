@@ -2,7 +2,7 @@
 #define BASECLIENT_H
 
 #include <QDataStream>
-#include <../response_struct.h>
+#include "response_struct.h"
 
 class BaseClient {
 public:

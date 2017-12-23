@@ -1,6 +1,6 @@
 #include "multithreadserver.h"
 #include "mythread.h"
-#include "../logging.h"
+#include "logging.h"
 
 MultithreadServer::MultithreadServer(int port, QObject *parent) :
       QTcpServer(parent), BaseServer(port)

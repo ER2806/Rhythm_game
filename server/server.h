@@ -9,7 +9,7 @@
 #include <QVector>
 #include <iostream>
 #include <string>
-#include "../response_struct.h"
+#include "response_struct.h"
 #include "baseserver.h"
 #include "packmanager.h"
 
