@@ -49,3 +49,8 @@ void SpinBox::prev()
         text.setString(ValuesArray[current]);
     }
 }
+
+int SpinBox::getNumber()
+{
+    return current;
+}

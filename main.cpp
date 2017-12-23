@@ -121,13 +121,7 @@ int main(int argc, char* argv[])
     std::vector<Sphere> SphereList = createNodes(PointList,texture,config);
     
     sf::SoundBuffer buffer;
-    //try -> show error
-    if (!buffer.loadFromFile(webgetter.getTrack()))
-        return -1;
     sf::Sound sound;
-    sound.setBuffer(buffer);
-    int isMusicPlaying = 0;
-    //sound.play();
 
     float deltaTime = 0.0f;
     sf::Clock clock;
@@ -182,6 +176,9 @@ int main(int argc, char* argv[])
                                 (event.mouseButton.y < config.getHeight()/2 + BUTTON_SIZE_Y/2))
                         {
                             GameMode = 2;
+                            if (!buffer.loadFromFile(webgetter.getTrack(spnbx.getNumber())))
+                                return -1;
+                            sound.setBuffer(buffer);
                             sound.play();
                             clock.restart();
                         }

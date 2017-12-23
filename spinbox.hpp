@@ -13,6 +13,7 @@ public:
     void setText(std::string t);
     void next();
     void prev();
+    int getNumber();
 private:
     sf::Sprite spinbox;
     sf::Text text;

@@ -6,7 +6,7 @@ WebGetter::WebGetter()
 WebGetter::~WebGetter()
 {}
 
-std::string WebGetter::getTrack() //получение адеса аудио
+std::string WebGetter::getTrack(int number) //получение адеса аудио
 {
     #ifndef NON_MERGING
     QApplication a(argc, argv);
@@ -15,7 +15,15 @@ std::string WebGetter::getTrack() //получение адеса аудио
     std::string request = "haddawa.wav";
     std::string audioFilename = webClient.getTrackFromServer(errorCode, request);
     #endif
-    return "haddawa.wav";
+    switch(number)
+    {
+        case 0:
+            return "haddawa.wav";
+        case 1:
+            return "haddawa2.wav";
+        default:
+            return "haddawa.wav";
+    }
 }
 
 std::string WebGetter::getParsedTrack()
@@ -35,6 +43,7 @@ std::vector<std::string> WebGetter::getTrackList()
     #endif
     std::vector<std::string> temp;
     temp.push_back("Haddaway - what is love");
+    temp.push_back("Haddaway - what is love2");
     temp.push_back("There is no song yet");
     return temp;
 }
