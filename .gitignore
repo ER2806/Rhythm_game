@@ -6,3 +6,4 @@ build-server-Desktop_Qt_5_7_1_clang_64bit-Debug
 .DS_Store
 server/logs
 client/music
+client/logs
