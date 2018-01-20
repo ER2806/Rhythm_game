@@ -7,6 +7,7 @@ public:
     EventAnalyser();
     ~EventAnalyser();
     int Analyze(sf::Event& event);
+    int MouseAnalyze(sf::Event& event, int xleft, int xright, int yup, int ydown);
 };
 #endif // EVENTANALYZER_HPP
 

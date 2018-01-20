@@ -1,5 +1,6 @@
 #ifndef BUTTON_HPP
 #define BUTTON_HPP
+
 #include <string>
 #include <SFML/Graphics.hpp>
 

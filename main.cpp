@@ -6,7 +6,7 @@ INITIALIZE_EASYLOGGINGPP
 #include "text.hpp"
 #include "eventanalyzer.hpp"
 #include "loaderfromfile.hpp"
-#include "button.hpp"
+#include "sfmlbutton.hpp"
 #include "spinbox.hpp"
 
 
@@ -160,13 +160,15 @@ int main(int argc, char* argv[])
                         break;
                     else if(GameMode == 0)
                     {
-                        if(MouseAnalyze(event, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getWidth()/2 + BUTTON_SIZE_X/2,
+                        EventAnalyser analyser;
+                        if(analyser.MouseAnalyze(event, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getWidth()/2 + BUTTON_SIZE_X/2,
                                         config.getHeight()/2 - BUTTON_SIZE_Y/2, config.getHeight()/2 + BUTTON_SIZE_Y/2))
                             GameMode = 1;
                     }
                     else if(GameMode == 1)
                     {
-                        if(MouseAnalyze(event, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getWidth()/2 + BUTTON_SIZE_X/2,
+                        EventAnalyser analyser;
+                        if(analyser.MouseAnalyze(event, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getWidth()/2 + BUTTON_SIZE_X/2,
                                         config.getHeight()/2 - BUTTON_SIZE_Y/2, config.getHeight()/2 + BUTTON_SIZE_Y/2))
                         {
                             GameMode = 2;
@@ -176,9 +178,9 @@ int main(int argc, char* argv[])
                             sound.play();
                             clock.restart();
                         }
-                        else if(MouseAnalyze(event, SPINBOX_LEFT, SPINBOX_RIGHT, SPINBOX_UPPER_ARROW_TOP, SPINBOX_BETWEEN_ARROWS))
+                        else if(analyser.MouseAnalyze(event, SPINBOX_LEFT, SPINBOX_RIGHT, SPINBOX_UPPER_ARROW_TOP, SPINBOX_BETWEEN_ARROWS))
                             spnbx.next();
-                        else if(MouseAnalyze(event, SPINBOX_LEFT, SPINBOX_RIGHT, SPINBOX_BETWEEN_ARROWS, SPINBOX_LOWER_ARROW_BOTTOM))
+                        else if(analyser.MouseAnalyze(event, SPINBOX_LEFT, SPINBOX_RIGHT, SPINBOX_BETWEEN_ARROWS, SPINBOX_LOWER_ARROW_BOTTOM))
                             spnbx.prev();
                     }
                     break;

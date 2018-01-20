@@ -29,7 +29,7 @@ void GraphicInterface::draw(const Text& text)
     window->draw(text.getText());
 }
 
-void GraphicInterface::draw(const Button& button)
+void GraphicInterface::draw(const Button &button)
 {
     window->draw(button.getButton());
     window->draw(button.getText());

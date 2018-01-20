@@ -37,6 +37,14 @@ const int ACTIVE_ZONE_BOTTOM = 550;
 const int RIGHT_ANGLE = 90;
 const int BUTTON_SIZE_X = 240;
 const int BUTTON_SIZE_Y = 56;
+const int SPINBOX_WIDTH = 500;
+const int SPINBOX_Y_OFFSET = 140;
+const int SPINBOX_LEFT = 490;
+const int SPINBOX_RIGHT = 550;
+const int SPINBOX_UPPER_ARROW_TOP = 160;
+const int SPINBOX_BETWEEN_ARROWS = 200;
+const int SPINBOX_LOWER_ARROW_BOTTOM = 240;
+
 const sf::Color WHITE = (sf::Color(255, 255, 255, 250));
 const sf::Color BLUE = (sf::Color(0,174,255,250));
 

@@ -16,3 +16,12 @@ int EventAnalyser::Analyze(sf::Event& event)
         return 3;
     return -1;
 }
+
+int EventAnalyser::MouseAnalyze(sf::Event& event, int xleft, int xright, int yup, int ydown)
+{
+    if((event.mouseButton.x > xleft) && (event.mouseButton.x < xright)
+            && (event.mouseButton.y > yup) && (event.mouseButton.y < ydown))
+        return 1;
+    else
+        return 0;
+}
