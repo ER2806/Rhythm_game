@@ -84,6 +84,7 @@ int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector
     return -1; //miss    
 }
 
+
 int main(int argc, char* argv[])
 {
     int GameMode = 0; // 0 - start screen, 1 - choose and play screen, 3 - action screen
@@ -106,7 +107,7 @@ int main(int argc, char* argv[])
     //try
     loader->LoadTexture("resourse/spn1.png", spnTexture);
     Button btn2(btnTexture, "play", font, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getHeight()/2 - BUTTON_SIZE_Y/2);
-    SpinBox spnbx(spnTexture, config.getWidth()/2 - 500/2, config.getHeight()/2 - 80/2 - 100,
+    SpinBox spnbx(spnTexture, config.getWidth()/2 - SPINBOX_WIDTH/2, config.getHeight()/2 - SPINBOX_Y_OFFSET,
                   webgetter.getTrackList(), font);
 
     sf::Texture texture;
@@ -159,21 +160,14 @@ int main(int argc, char* argv[])
                         break;
                     else if(GameMode == 0)
                     {
-                        if((event.mouseButton.x > (config.getWidth()/2 - BUTTON_SIZE_X/2)) &&
-                                (event.mouseButton.x < (config.getWidth()/2 + BUTTON_SIZE_X/2)) &&
-                                (event.mouseButton.y > config.getHeight()/2 - BUTTON_SIZE_Y/2) &&
-                                (event.mouseButton.y < config.getHeight()/2 + BUTTON_SIZE_Y/2))
-                        {
+                        if(MouseAnalyze(event, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getWidth()/2 + BUTTON_SIZE_X/2,
+                                        config.getHeight()/2 - BUTTON_SIZE_Y/2, config.getHeight()/2 + BUTTON_SIZE_Y/2))
                             GameMode = 1;
-
-                        }
                     }
                     else if(GameMode == 1)
                     {
-                        if((event.mouseButton.x > (config.getWidth()/2 - BUTTON_SIZE_X/2)) &&
-                                (event.mouseButton.x < (config.getWidth()/2 + BUTTON_SIZE_X/2)) &&
-                                (event.mouseButton.y > config.getHeight()/2 - BUTTON_SIZE_Y/2) &&
-                                (event.mouseButton.y < config.getHeight()/2 + BUTTON_SIZE_Y/2))
+                        if(MouseAnalyze(event, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getWidth()/2 + BUTTON_SIZE_X/2,
+                                        config.getHeight()/2 - BUTTON_SIZE_Y/2, config.getHeight()/2 + BUTTON_SIZE_Y/2))
                         {
                             GameMode = 2;
                             if (!buffer.loadFromFile(webgetter.getTrack(spnbx.getNumber())))
@@ -182,15 +176,9 @@ int main(int argc, char* argv[])
                             sound.play();
                             clock.restart();
                         }
-                        else if((event.mouseButton.x > 490) &&
-                                (event.mouseButton.x < 550) &&
-                                (event.mouseButton.y > 160) &&
-                                (event.mouseButton.y < 200))
+                        else if(MouseAnalyze(event, SPINBOX_LEFT, SPINBOX_RIGHT, SPINBOX_UPPER_ARROW_TOP, SPINBOX_BETWEEN_ARROWS))
                             spnbx.next();
-                        else if((event.mouseButton.x > 490) &&
-                                (event.mouseButton.x < 550) &&
-                                (event.mouseButton.y > 200) &&
-                                (event.mouseButton.y < 240))
+                        else if(MouseAnalyze(event, SPINBOX_LEFT, SPINBOX_RIGHT, SPINBOX_BETWEEN_ARROWS, SPINBOX_LOWER_ARROW_BOTTOM))
                             spnbx.prev();
                     }
                     break;
