@@ -7,6 +7,8 @@
 class FilterInterface
 {
 public:
+    virtual ~FilterInterface(){}
+
     virtual std::array<std::vector<int>, BANDS> runFilters() = 0;
 };
 

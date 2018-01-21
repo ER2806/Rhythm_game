@@ -5,6 +5,8 @@
 class PhysicalResponse
 {
 public:
+    virtual ~PhysicalResponse(){}
+
     virtual void buildPhysicalResponse(std::vector<std::pair<int, int>> data) = 0;
 };
 

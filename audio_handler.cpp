@@ -67,7 +67,6 @@ AudioHandler::Private::~Private(){
     delete musicWorker;
 }
 
-
 int AudioHandler::Private::updateSpectrumInTime(){
     std::array<int, BANDS> temp;
     std::vector<float> fastFT = musicWorker->getFFT(CONVERSION_SAMPLING);
