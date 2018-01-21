@@ -6,7 +6,6 @@ INITIALIZE_EASYLOGGINGPP
 #include "text.hpp"
 #include "eventanalyzer.hpp"
 #include "loaderfromfile.hpp"
-#include "sfmlbutton.hpp"
 #include "spinbox.hpp"
 
 
@@ -84,14 +83,8 @@ int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector
     return -1; //miss    
 }
 
-
-int main(int argc, char* argv[])
+int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, WebGetter& webgetter, Loader* loader)
 {
-    int GameMode = 0; // 0 - start screen, 1 - choose and play screen, 3 - action screen
-    ConfigurationManager config("resourse/gui.conf");
-    GraphicInterface mainInterface(config.getWidth(), config.getHeight(), "rhythm game");
-    WebGetter webgetter;
-    Loader* loader = new LoaderFromFile();
     sf::Font font;
     // try -> show error
     loader->LoadFont("resourse/gothic.ttf", font);
@@ -124,17 +117,16 @@ int main(int argc, char* argv[])
     sf::SoundBuffer buffer;
     sf::Sound sound;
 
-    float deltaTime = 0.0f;
-    sf::Clock clock;
-
     int counterHit = 0;
     int counterMiss = 0;
     Text hit(font, FONTSIZE, WHITE, HIT_SCORE_HORIZONTAL_PADDING, SCORE_VERTICAL_PADDING);
     Text miss(font, FONTSIZE, WHITE, MISS_SCORE_HORIZONTAL_PADDING, SCORE_VERTICAL_PADDING);
 
+    int GameMode = 0; // 0 - start screen, 1 - choose and play screen, 3 - action screen
+    sf::Clock clock;
     while (mainInterface.isGameOpen())
     {
-        deltaTime = clock.getElapsedTime().asMilliseconds();
+        float deltaTime = clock.getElapsedTime().asMilliseconds();
         sf::Event event;
         while (mainInterface.pollEvent(event))
         {
@@ -194,7 +186,6 @@ int main(int argc, char* argv[])
             hit.setValue(counterHit);
             miss.setValue(counterMiss);
 
-
             for(int i = 0; i < 4; i++)
                 mainInterface.draw(linesList[i]);
             for(int i = 0; i < SphereList.size(); i++)
@@ -222,4 +213,12 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-
+int main(int argc, char* argv[])
+{
+    ConfigurationManager config("resourse/gui.conf");
+    GraphicInterface mainInterface(config.getWidth(), config.getHeight(), "rhythm game");
+    WebGetter webgetter;
+    Loader* loader = new LoaderFromFile();
+    return gameManager(config, mainInterface, webgetter, loader);
+    delete loader;
+}
