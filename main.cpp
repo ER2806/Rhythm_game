@@ -1,6 +1,7 @@
 #include "easylogging++.h"
 INITIALIZE_EASYLOGGINGPP
-
+#include <memory>
+#include <string>
 #include "graph.hpp"
 #include "interface.hpp"
 #include "text.hpp"
@@ -83,7 +84,7 @@ int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector
     return -1; //miss    
 }
 
-int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, WebGetter& webgetter, Loader* loader)
+int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, WebGetter& webgetter, std::shared_ptr<Loader> loader)
 {
     sf::Font font;
     // try -> show error
@@ -106,8 +107,6 @@ int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, W
     sf::Texture texture;
     //try
     loader->LoadTexture("resourse/sphere.png", texture);
-
-    delete loader;
 
     std::vector<Line> linesList = createLines(config);
     //try
@@ -187,7 +186,7 @@ int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, W
             miss.setValue(counterMiss);
 
             for(int i = 0; i < 4; i++)
-                mainInterface.draw(linesList[i]);
+                mainInterface.drawObj(linesList[i]);
             for(int i = 0; i < SphereList.size(); i++)
             {
                 if((PointList[i].time <= deltaTime) && (SphereList[i].getPositionY() <= ACTIVE_ZONE_BOTTOM-BALL_RADIUS)) // 1.7 cекунд на всю линию, 1.5 - до плашки
@@ -195,19 +194,19 @@ int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, W
                     SphereList[i].setPosition(0, 1);
                     //if(!(((int)deltaTime)%4))
                     //    SpriteList[i].move(0, 1);
-                    mainInterface.draw(SphereList[i]);
+                    mainInterface.drawObj(SphereList[i]);
                 }
             }
-            mainInterface.draw(hit);
-            mainInterface.draw(miss);
+            mainInterface.drawObj(hit);
+            mainInterface.drawObj(miss);
         }
         if(GameMode == 1)
         {
-            mainInterface.draw(spnbx);
-            mainInterface.draw(btn2);
+            mainInterface.drawObjWText(spnbx);
+            mainInterface.drawObjWText(btn2);
         }
         if(GameMode == 0)
-            mainInterface.draw(btn);
+            mainInterface.drawObjWText(btn);
         mainInterface.render();
     }
     return 0;
@@ -215,10 +214,21 @@ int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, W
 
 int main(int argc, char* argv[])
 {
-    ConfigurationManager config("resourse/gui.conf");
+    std::string configPath;
+    if (argc > 1)// если передаем аргументы, то argc будет больше 1(в зависимости от кол-ва аргументов)
+    {
+          configPath = argv[1];
+          LOG(INFO) << "CONFIGURATION FILE PATH: " << configPath;
+    }
+    else
+    {
+        LOG(INFO) << "NO CONFIGURATION FILE PATH";
+        return 0;
+    }
+    //ConfigurationManager config("resourse/gui.conf");
+    ConfigurationManager config(configPath);
     GraphicInterface mainInterface(config.getWidth(), config.getHeight(), "rhythm game");
     WebGetter webgetter;
-    Loader* loader = new LoaderFromFile();
+    std::shared_ptr<Loader> loader(new LoaderFromFile());
     return gameManager(config, mainInterface, webgetter, loader);
-    delete loader;
-}
+ }

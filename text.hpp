@@ -6,7 +6,7 @@ class Text{
 public:
     Text(sf::Font& font, int size, sf::Color color, int posx, int posy);
     ~Text();
-    sf::Text getText() const;
+    sf::Text get() const;
     void setValue(int value);
 private:
     sf::Text text;

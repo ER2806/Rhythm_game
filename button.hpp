@@ -8,7 +8,7 @@ class Button {
 public:
     Button (sf::Texture& texture, std::string text, sf::Font &font, int posx, int posy);
     ~Button();
-    sf::Sprite getButton() const;
+    sf::Sprite get() const;
     sf::Text getText() const;
 private:
     sf::Sprite button;

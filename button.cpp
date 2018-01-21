@@ -15,7 +15,7 @@ Button::Button(sf::Texture &texture, std::string t, sf::Font& font, int posx, in
 Button::~Button()
 {}
 
-sf::Sprite Button::getButton() const
+sf::Sprite Button::get() const
 {
     return button;
 }

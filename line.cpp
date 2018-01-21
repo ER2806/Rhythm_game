@@ -11,7 +11,7 @@ Line::Line(int length, int thickness,int posx, int posy, int rotationAngle)
 Line::~Line()
 {}
 
-sf::RectangleShape Line::getLine() const
+sf::RectangleShape Line::get() const
 {
     return line;
 }

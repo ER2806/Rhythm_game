@@ -31,7 +31,7 @@ void Sphere::setColor(sf::Color color)
     sphere.setColor(color);
 }
 
-sf::Sprite Sphere::getSphere() const
+sf::Sprite Sphere::get() const
 {
     return sphere;
 }

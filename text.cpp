@@ -16,7 +16,7 @@ void Text::setValue(int value)
     text.setString(std::to_string(value));
 }
 
-sf::Text Text::getText() const
+sf::Text Text::get() const
 {
     return text;
 }

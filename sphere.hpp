@@ -6,7 +6,7 @@ class Sphere{
 public:
     Sphere(sf::Texture& texture, int radius, sf::Color color, int posx, int posy);
     ~Sphere();
-    sf::Sprite getSphere() const;
+    sf::Sprite get() const;
     int getPositionY() const;
     sf::Color getColor() const;
     void setColor(sf::Color);

@@ -6,7 +6,7 @@ class Line{
 public:
     Line(int length, int thickness,int posx, int posy, int rotationAngle);
     ~Line();
-    sf::RectangleShape getLine() const;
+    sf::RectangleShape get() const;
 private:
     sf::RectangleShape line;
 };

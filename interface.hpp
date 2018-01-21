@@ -12,12 +12,15 @@ public:
     GraphicInterface(int width, int height, std::string window_name);
     ~GraphicInterface();
 
-    void draw(sf::Drawable* object);
-    void draw(const Line& object);
-    void draw(const Sphere& sphere);
-    void draw(const Text& text);
-    void draw(const Button& button);
-    void draw(const SpinBox& spinbox);
+    template<class T> void drawObj(T& obj)
+    {
+        window->draw(obj.get());
+    }
+    template<class T> void drawObjWText(T& obj)
+    {
+        window->draw(obj.get());
+        window->draw(obj.getText());
+    }
     void render();
     bool isGameOpen();
     void clear();

@@ -8,7 +8,7 @@ class SpinBox {
 public:
     SpinBox (sf::Texture& texture, int posx, int posy, std::vector<std::string> values, sf::Font &font);
     ~SpinBox();
-    sf::Sprite getSpinBox() const;
+    sf::Sprite get() const;
     sf::Text getText() const;
     void setText(std::string t);
     void next();

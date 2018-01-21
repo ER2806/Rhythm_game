@@ -22,7 +22,7 @@ void SpinBox::setText(std::string t)
     text.setString(t);
 }
 
-sf::Sprite SpinBox::getSpinBox() const
+sf::Sprite SpinBox::get() const
 {
     return spinbox;
 }
