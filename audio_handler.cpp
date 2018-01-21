@@ -54,8 +54,8 @@ AudioHandler::Private::Private(const std::string& filename, AudioToFFTBass* work
     : sourceFilename(filename), musicWorker(worker){
 }
 
-AudioHandler::AudioHandler(const std::string& filename){
-    AudioToFFTBass* worker = new AudioToFFTBass(filename);
+AudioHandler::AudioHandler(const std::string& filename, AudioToFFTBass* worker){
+    //AudioToFFTBass* worker = new AudioToFFTBass(filename);
     private_group = new Private(filename, worker);
 }
 
