@@ -9,11 +9,11 @@ EventAnalyser::~EventAnalyser()
 int EventAnalyser::Analyze(sf::Event& event)
 {
     if (event.key.code == sf::Keyboard::A)
-        return 1;
+        return A;
     else if(event.key.code == sf::Keyboard::S)
-        return 2;
+        return S;
     else if(event.key.code == sf::Keyboard::D)
-        return 3;
+        return D;
     return -1;
 }
 

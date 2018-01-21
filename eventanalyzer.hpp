@@ -2,6 +2,8 @@
 #define EVENTANALYZER_HPP
 #include <SFML/Graphics.hpp>
 
+enum keyValue {A = 1, S, D};
+
 class EventAnalyser{
 public:
     EventAnalyser();
