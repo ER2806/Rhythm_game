@@ -10,35 +10,39 @@ INITIALIZE_EASYLOGGINGPP
 #include "spinbox.hpp"
 
 
-std::vector<Line> createLines(ConfigurationManager confg)
+std::vector<Line> createLines()
 {
+    SingletonConfigManager& confInst(SingletonConfigManager::getInstance());
     std::vector<Line> lineList;
     for(int i = 0; i < 3; i++)
     {
-        Line line(confg.getHeight()-VERTICAL_LINE_Y_INDENT*2, LINE_THICKNESS, confg.getWidth()/2 + DISTANCE_BETWEEN_LINES*(i-1),
-                  DISTANCE_BETWEEN_LINES, RIGHT_ANGLE);
+        Line line(confInst.getHeight()-confInst. getVerticalLineYIndent()*2, confInst.getLineThickness(),
+                  confInst.getWidth()/2 + confInst.getDistanceBetweenLines()*(i-1),
+                  confInst.getDistanceBetweenLines(), confInst.getRigtAngle());
         lineList.push_back(line);
     }
-    Line lineh(HORIZONTAL_LINE_LENGTH, LINE_THICKNESS, confg.getWidth()/2-HORIZONTAL_LINE_LENGTH/2, HORIZONTAL_LINE_Y_POSITION, 0);
+    Line lineh(confInst.getHorizontalLineLength(), confInst.getLineThickness(),
+               confInst.getWidth()/2-confInst.getHorizontalLineLength()/2, confInst.getHorizontalLineYPosition(), 0);
     lineList.push_back(lineh);
     return lineList;
 }
 
-std::vector<Sphere> createNodes(std::vector<PointInTime>& PointList, sf::Texture& texture,  ConfigurationManager confg)
+std::vector<Sphere> createNodes(std::vector<PointInTime>& PointList, sf::Texture& texture)
 {
+    SingletonConfigManager& confInst(SingletonConfigManager::getInstance());
     std::vector<Sphere> SphereList;
     for(int i = 0; i < PointList.size(); i++)
     {
-        Sphere sp(texture, BALL_RADIUS, WHITE,
-                  confg.getWidth()/2 - DISTANCE_BETWEEN_LINES*2 + DISTANCE_BETWEEN_LINES * PointList[i].line - BALL_RADIUS,
-                  VERTICAL_LINE_Y_INDENT - BALL_RADIUS);
-        if(PointList[i].time < CROSS_ROAD_TIME)
+        Sphere sp(texture, confInst.getBallRadius(), WHITE,
+                  confInst.getWidth()/2 - confInst.getDistanceBetweenLines()*2 + confInst.getDistanceBetweenLines() * PointList[i].line - confInst.getBallRadius(),
+                  confInst.getVerticalLineYIndent() - confInst.getBallRadius());
+        if(PointList[i].time < confInst.getCrossRoadTime())
         {
-            sp.setPosition(0,((double)(CROSS_ROAD_TIME-PointList[i].time))*HORIZONTAL_LINE_Y_POSITION/CROSS_ROAD_TIME);
+            sp.setPosition(0,((double)(confInst.getCrossRoadTime()-PointList[i].time))*confInst.getHorizontalLineYPosition()/confInst.getCrossRoadTime());
             PointList[i].time = 0;
         }
         else
-            PointList[i].time -= CROSS_ROAD_TIME;
+            PointList[i].time -= confInst.getCrossRoadTime();
         SphereList.push_back(sp);
     }
     return SphereList;
@@ -64,6 +68,7 @@ std::vector<PointInTime> getPoints(WebGetter& wg)
 
 int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector<PointInTime>& PointList)
 {
+    SingletonConfigManager& confInst(SingletonConfigManager::getInstance());
     int line;
     EventAnalyser analyser;
     line = analyser.Analyze(event);
@@ -73,8 +78,8 @@ int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector
     int flag = 0;
     for(int i = 0; i < SphereList.size(); i++)
     {
-        if((PointList[i].line == line) && (SphereList[i].getPositionY() >= ACTIVE_ZONE_TOP-BALL_RADIUS)
-                                    && (SphereList[i].getPositionY() <= ACTIVE_ZONE_BOTTOM-BALL_RADIUS)
+        if((PointList[i].line == line) && (SphereList[i].getPositionY() >= confInst.getActiveZoneTop()-confInst.getBallRadius())
+                                    && (SphereList[i].getPositionY() <= confInst.getActiveZoneBottom()-confInst.getBallRadius())
                                     && (SphereList[i].getColor() != BLUE))
             {
                 SphereList[i].recieveSignal();
@@ -84,8 +89,10 @@ int keyboardReact(sf::Event& event, std::vector<Sphere>& SphereList, std::vector
     return -1; //miss    
 }
 
-int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, WebGetter& webgetter, std::shared_ptr<Loader> loader)
+int gameManager(GraphicInterface& mainInterface, WebGetter& webgetter, std::shared_ptr<Loader> loader)
 {
+    SingletonConfigManager& confInst(SingletonConfigManager::getInstance());
+
     sf::Font font;
     // try -> show error
     loader->LoadFont("resourse/gothic.ttf", font);
@@ -94,32 +101,33 @@ int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, W
     sf::Texture btnTexture;
     //try
     loader->LoadTexture("resourse/btn1.png", btnTexture);
-    Button btn(btnTexture, "start game", font, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getHeight()/2 - BUTTON_SIZE_Y/2);
+    Button btn(btnTexture, "start game", font, confInst.getWidth()/2 - confInst.getButtonSizeX()/2,
+               confInst.getHeight()/2 - confInst.getButtonSizeY()/2);
 
     //spinbox
     sf::Texture spnTexture;
     //try
     loader->LoadTexture("resourse/spn1.png", spnTexture);
-    Button btn2(btnTexture, "play", font, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getHeight()/2 - BUTTON_SIZE_Y/2);
-    SpinBox spnbx(spnTexture, config.getWidth()/2 - SPINBOX_WIDTH/2, config.getHeight()/2 - SPINBOX_Y_OFFSET,
+    Button btn2(btnTexture, "play", font, confInst.getWidth()/2 -  confInst.getButtonSizeX()/2, confInst.getHeight()/2 - confInst.getButtonSizeY()/2);
+    SpinBox spnbx(spnTexture, confInst.getWidth()/2 - confInst.getSpinboxWidth()/2, confInst.getHeight()/2 - confInst.getSpinboxYOffset(),
                   webgetter.getTrackList(), font);
 
     sf::Texture texture;
     //try
     loader->LoadTexture("resourse/sphere.png", texture);
 
-    std::vector<Line> linesList = createLines(config);
+    std::vector<Line> linesList = createLines();
     //try
     std::vector<PointInTime> PointList = getPoints(webgetter);
-    std::vector<Sphere> SphereList = createNodes(PointList,texture,config);
+    std::vector<Sphere> SphereList = createNodes(PointList,texture);
     
     sf::SoundBuffer buffer;
     sf::Sound sound;
 
     int counterHit = 0;
     int counterMiss = 0;
-    Text hit(font, FONTSIZE, WHITE, HIT_SCORE_HORIZONTAL_PADDING, SCORE_VERTICAL_PADDING);
-    Text miss(font, FONTSIZE, WHITE, MISS_SCORE_HORIZONTAL_PADDING, SCORE_VERTICAL_PADDING);
+    Text hit(font, confInst.getFontSize(), WHITE, confInst.getHitScoreHorizontalPadding(), confInst.getScoreVerticalPadding());
+    Text miss(font, confInst.getFontSize(), WHITE, confInst.getMissScoreHorizontalPadding(), confInst.getScoreVerticalPadding());
 
     int GameMode = 0; // 0 - start screen, 1 - choose and play screen, 3 - action screen
     sf::Clock clock;
@@ -152,15 +160,15 @@ int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, W
                     else if(GameMode == 0)
                     {
                         EventAnalyser analyser;
-                        if(analyser.MouseAnalyze(event, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getWidth()/2 + BUTTON_SIZE_X/2,
-                                        config.getHeight()/2 - BUTTON_SIZE_Y/2, config.getHeight()/2 + BUTTON_SIZE_Y/2))
+                        if(analyser.MouseAnalyze(event, confInst.getWidth()/2 - confInst.getButtonSizeX()/2, confInst.getWidth()/2 + confInst.getButtonSizeX()/2,
+                                        confInst.getHeight()/2 - confInst.getButtonSizeY()/2, confInst.getHeight()/2 + confInst.getButtonSizeY()/2))
                             GameMode = 1;
                     }
                     else if(GameMode == 1)
                     {
                         EventAnalyser analyser;
-                        if(analyser.MouseAnalyze(event, config.getWidth()/2 - BUTTON_SIZE_X/2, config.getWidth()/2 + BUTTON_SIZE_X/2,
-                                        config.getHeight()/2 - BUTTON_SIZE_Y/2, config.getHeight()/2 + BUTTON_SIZE_Y/2))
+                        if(analyser.MouseAnalyze(event, confInst.getWidth()/2 - confInst.getButtonSizeX()/2, confInst.getWidth()/2 + confInst.getButtonSizeX()/2,
+                                        confInst.getHeight()/2 - confInst.getButtonSizeY()/2, confInst.getHeight()/2 + confInst.getButtonSizeY()/2))
                         {
                             GameMode = 2;
                             if (!buffer.loadFromFile(webgetter.getTrack(spnbx.getNumber())))
@@ -169,9 +177,11 @@ int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, W
                             sound.play();
                             clock.restart();
                         }
-                        else if(analyser.MouseAnalyze(event, SPINBOX_LEFT, SPINBOX_RIGHT, SPINBOX_UPPER_ARROW_TOP, SPINBOX_BETWEEN_ARROWS))
+                        else if(analyser.MouseAnalyze(event, confInst.getSpinboxLeft(), confInst.getSpinboxRight(),
+                                                      confInst.getSpinboxUpperArrowTop(), confInst.getSpinboxBetweenArrows()))
                             spnbx.next();
-                        else if(analyser.MouseAnalyze(event, SPINBOX_LEFT, SPINBOX_RIGHT, SPINBOX_BETWEEN_ARROWS, SPINBOX_LOWER_ARROW_BOTTOM))
+                        else if(analyser.MouseAnalyze(event, confInst.getSpinboxLeft(), confInst.getSpinboxRight(),
+                                                      confInst.getSpinboxBetweenArrows(), confInst.getSpinboxLowerArrowBottom()))
                             spnbx.prev();
                     }
                     break;
@@ -189,7 +199,7 @@ int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, W
                 mainInterface.drawObj(linesList[i]);
             for(int i = 0; i < SphereList.size(); i++)
             {
-                if((PointList[i].time <= deltaTime) && (SphereList[i].getPositionY() <= ACTIVE_ZONE_BOTTOM-BALL_RADIUS)) // 1.7 cекунд на всю линию, 1.5 - до плашки
+                if((PointList[i].time <= deltaTime) && (SphereList[i].getPositionY() <= confInst.getActiveZoneBottom()-confInst.getBallRadius())) // 1.7 cекунд на всю линию, 1.5 - до плашки
                 {
                     SphereList[i].setPosition(0, 1);
                     //if(!(((int)deltaTime)%4))
@@ -214,21 +224,10 @@ int gameManager(ConfigurationManager& config, GraphicInterface& mainInterface, W
 
 int main(int argc, char* argv[])
 {
-    std::string configPath;
-    if (argc > 1)// если передаем аргументы, то argc будет больше 1(в зависимости от кол-ва аргументов)
-    {
-          configPath = argv[1];
-          LOG(INFO) << "CONFIGURATION FILE PATH: " << configPath;
-    }
-    else
-    {
-        LOG(INFO) << "NO CONFIGURATION FILE PATH";
-        return 0;
-    }
-    //ConfigurationManager config("resourse/gui.conf");
-    ConfigurationManager config(configPath);
-    GraphicInterface mainInterface(config.getWidth(), config.getHeight(), "rhythm game");
+    SingletonConfigManager& confInst(SingletonConfigManager::getInstance());
+
+    GraphicInterface mainInterface(confInst.getWidth(), confInst.getHeight(), "rhythm game");
     WebGetter webgetter;
     std::shared_ptr<Loader> loader(new LoaderFromFile());
-    return gameManager(config, mainInterface, webgetter, loader);
+    return gameManager(mainInterface, webgetter, loader);
  }
