@@ -34,20 +34,22 @@ sf::Text SpinBox::getText() const
 
 void SpinBox::next()
 {
-    if(current < ValuesArray.size())
-    {
+    if(current < ValuesArray.size()-1)
         current++;
-        text.setString(ValuesArray[current]);
-    }
+    else
+        current = 0;
+
+    text.setString(ValuesArray[current]);
 }
 
 void SpinBox::prev()
 {
     if(current > 0)
-    {
         current--;
-        text.setString(ValuesArray[current]);
-    }
+    else
+        current = ValuesArray.size()-1;
+
+    text.setString(ValuesArray[current]);
 }
 
 int SpinBox::getNumber()
