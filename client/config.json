@@ -1,0 +1,11 @@
+{
+   "ip_addr": {
+   		"host" : "localhost",
+   		"port" : 8000
+   },
+   "routing": {
+   		"music_path": "/Users/mac/Documents/Technopark/RhytmGame/MyServer/client/music/", 
+   		"parsed_music_path": "/Users/mac/Documents/Technopark/RhytmGame/MyServer/client/music/",
+        "log_file_path": "/Users/mac/Documents/Technopark/RhytmGame/Rhythm_game/client/logs/mylogs.log"
+   }
+}

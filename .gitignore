@@ -1,0 +1,9 @@
+make_all.pro
+*.autosave
+*.pro.user
+build*
+.DS_Store
+server/logs
+client/music
+client/logs
+client/logs/mylogs
