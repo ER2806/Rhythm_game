@@ -221,12 +221,3 @@ int gameManager(GraphicInterface& mainInterface, WebGetter& webgetter, std::shar
     }
     return 0;
 }
-
-int main(int argc, char* argv[])
-{
-    SingletonConfigManager& confInst(SingletonConfigManager::getInstance());
-    GraphicInterface mainInterface(confInst.getWidth(), confInst.getHeight(), "rhythm game");
-    WebGetter webgetter;
-    std::shared_ptr<Loader> loader(new LoaderFromFile());
-    return gameManager(mainInterface, webgetter, loader);
- }
